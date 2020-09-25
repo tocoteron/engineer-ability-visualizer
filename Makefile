@@ -7,7 +7,7 @@ down:
 DB_SERVICE:=db
 DB_NAME:=engineer-ability-visualizer
 db/client:
-	docker-compose exec $(DB_SERVICE) mysql -uroot -hlocalhost -ppassword
+	docker-compose exec $(DB_SERVICE) mysql -uroot -hlocalhost -ppassword $(DB_NAME)
 
 db/init:
 	docker-compose exec $(DB_SERVICE) \
