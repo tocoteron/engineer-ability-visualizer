@@ -13,3 +13,8 @@ db/init:
 	docker-compose exec $(DB_SERVICE) \
 		mysql -u root -h localhost -ppassword \
 		-e "CREATE DATABASE \`$(DB_NAME)\`"
+
+db/drop:
+	docker-compose exec $(DB_SERVICE) \
+		mysql -u root -h localhost -ppassword \
+		-e "drop database \`$(DB_NAME)\`"
