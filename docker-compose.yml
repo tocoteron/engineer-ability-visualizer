@@ -11,6 +11,16 @@ services:
     - 3306:3306
     volumes:
     - db-volume:/var/lib/mysql
+  
+  backend:
+    build:
+      context: ./backend
+    command: go run main.go
+    volumes:
+      - ./backend:/app
+    ports:
+    - 1323:1323
+    working_dir: /app
 
 volumes:
-    db-volume:
+  db-volume:
