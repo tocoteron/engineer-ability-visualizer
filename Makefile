@@ -1,5 +1,5 @@
 up:
-	docker-compose up
+	docker-compose up $(container)
 
 down:
 	docker-compose down
