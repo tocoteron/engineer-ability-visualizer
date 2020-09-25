@@ -8,19 +8,19 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     ports:
-    - 3306:3306
+      - 3306:3306
     volumes:
-    - db-volume:/var/lib/mysql
+      - db-volume:/var/lib/mysql
   
   backend:
     build:
       context: ./backend
+    working_dir: /app
     command: go run main.go
+    ports:
+      - 1323:1323
     volumes:
       - ./backend:/app
-    ports:
-    - 1323:1323
-    working_dir: /app
 
   frontend:
     build:
