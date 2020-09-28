@@ -35,32 +35,32 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 		return nil, err
 	}
 
-	projectPoint, err := calcProjectPoint(ctx, githubClient, githubUser)
+	projectScore, err := calcProjectScore(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
 
-	repositoryPoint, err := calcRepositoryPoint(ctx, githubClient, githubUser)
+	repositoryScore, err := calcRepositoryScore(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
 
-	commitPoint, err := calcCommitPoint(githubUserEvents)
+	commitScore, err := calcCommitScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 
-	pullreqPoint, err := calcPullreqPoint(githubUserEvents)
+	pullreqScore, err := calcPullreqScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 
-	issuePoint, err := calcIssuePoint(githubUserEvents)
+	issueScore, err := calcIssueScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 
-	speedPoint, err := calcSpeedPoint(ctx, githubClient, githubUser)
+	speedScore, err := calcSpeedScore(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +68,12 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 	ability := &model.EngineerUserAbility{
 		ID:              0,
 		EngineerUserID:  engineerUserID,
-		ProjectPoint:    projectPoint,
-		RepositoryPoint: repositoryPoint,
-		CommitPoint:     commitPoint,
-		PullreqPoint:    pullreqPoint,
-		IssuePoint:      issuePoint,
-		SpeedPoint:      speedPoint,
+		ProjectScore:    projectScore,
+		RepositoryScore: repositoryScore,
+		CommitScore:     commitScore,
+		PullreqScore:    pullreqScore,
+		IssueScore:      issueScore,
+		SpeedScore:      speedScore,
 		CreatedAt:       time.Now(),
 	}
 
@@ -118,7 +118,7 @@ func getAuthenticatedUserEvents(ctx context.Context, client *github.Client, user
 	return res, nil
 }
 
-func calcProjectPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+func calcProjectScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
 	projects, _, err := client.Users.ListProjects(ctx, user.GetLogin(), nil)
 	if err != nil {
 		return 0, err
@@ -127,7 +127,7 @@ func calcProjectPoint(ctx context.Context, client *github.Client, user *github.U
 	return uint64(len(projects)), nil
 }
 
-func calcRepositoryPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+func calcRepositoryScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
 	repositories, _, err := client.Repositories.List(ctx, "", nil)
 	if err != nil {
 		return 0, err
@@ -136,7 +136,7 @@ func calcRepositoryPoint(ctx context.Context, client *github.Client, user *githu
 	return uint64(len(repositories)), nil
 }
 
-func calcCommitPoint(events []*github.Event) (uint64, error) {
+func calcCommitScore(events []*github.Event) (uint64, error) {
 	commits := []*github.Event{}
 
 	for _, event := range events {
@@ -148,7 +148,7 @@ func calcCommitPoint(events []*github.Event) (uint64, error) {
 	return uint64(len(commits)), nil
 }
 
-func calcPullreqPoint(events []*github.Event) (uint64, error) {
+func calcPullreqScore(events []*github.Event) (uint64, error) {
 	pullreqs := []*github.Event{}
 
 	for _, event := range events {
@@ -160,7 +160,7 @@ func calcPullreqPoint(events []*github.Event) (uint64, error) {
 	return uint64(len(pullreqs)), nil
 }
 
-func calcIssuePoint(events []*github.Event) (uint64, error) {
+func calcIssueScore(events []*github.Event) (uint64, error) {
 	issues := []*github.Event{}
 
 	for _, event := range events {
@@ -173,13 +173,13 @@ func calcIssuePoint(events []*github.Event) (uint64, error) {
 	return uint64(len(issues)), nil
 }
 
-func calcSpeedPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+func calcSpeedScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
 	repositories, _, err := client.Repositories.List(ctx, "", nil)
 	if err != nil {
 		return 0, err
 	}
 
-	speedPoint := 0.0
+	speedScore := 0.0
 
 	options := &github.CommitsListOptions{
 		Author: user.GetLogin(),
@@ -204,11 +204,11 @@ func calcSpeedPoint(ctx context.Context, client *github.Client, user *github.Use
 				commits[len(commits)-1].GetCommit(),
 				commits[0].GetCommit(),
 			)
-			speedPoint += float64(len(commits)) / duration.Hours()
+			speedScore += float64(len(commits)) / duration.Hours()
 		}
 	}
 
-	return uint64(speedPoint), nil
+	return uint64(speedScore), nil
 }
 
 func calcDurationBetween2Commits(first *github.Commit, last *github.Commit) time.Duration {
