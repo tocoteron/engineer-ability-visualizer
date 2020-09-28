@@ -7,6 +7,6 @@ CREATE TABLE `engineer_users_ability_reports` (
   `pullreq_point` int unsigned NOT NULL,
   `issue_point` int unsigned NOT NULL,
   `speed_point` int unsigned NOT NULL,
-  `created_at` timestamp NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`engineer_user_id`) REFERENCES `engineer_user` (`id`)
 );
