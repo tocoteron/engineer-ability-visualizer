@@ -6,8 +6,8 @@ import (
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 )
 
-func GetEngineerUserAbilities(engineerUserID uint64) ([]*model.EngineerUserAbility, error) {
-	mockData := []*model.EngineerUserAbility{
+func GetEngineerUserAbilityReports(engineerUserID uint64) ([]*model.EngineerUserAbilityReport, error) {
+	mockData := []*model.EngineerUserAbilityReport{
 		{
 			ID:              0,
 			EngineerUserID:  engineerUserID,

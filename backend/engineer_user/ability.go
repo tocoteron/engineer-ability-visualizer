@@ -11,7 +11,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility, error) {
+func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityReport, error) {
 	engineerUser, err := repository.GetEngineerUser(engineerUserID)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 		return nil, err
 	}
 
-	ability := &model.EngineerUserAbility{
+	ability := &model.EngineerUserAbilityReport{
 		ID:              0,
 		EngineerUserID:  engineerUserID,
 		ProjectScore:    projectScore,

@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type EngineerUserAbility struct {
+type EngineerUserAbilityReport struct {
 	ID              uint64    `json:"id"`
 	EngineerUserID  uint64    `json:"enginerUserId"`
 	ProjectScore    uint64    `json:"projectScore"`
