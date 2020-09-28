@@ -3,13 +3,13 @@ package model
 import "time"
 
 type EngineerUserAbility struct {
-	ID              uint64
-	EngineerUserID  uint64
-	ProjectScore    uint64
-	RepositoryScore uint64
-	CommitScore     uint64
-	PullreqScore    uint64
-	IssueScore      uint64
-	SpeedScore      uint64
-	CreatedAt       time.Time
+	ID              uint64    `json:"id"`
+	EngineerUserID  uint64    `json:"enginerUserId"`
+	ProjectScore    uint64    `json:"projectScore"`
+	RepositoryScore uint64    `json:"repositoryScore"`
+	CommitScore     uint64    `json:"commitScore"`
+	PullreqScore    uint64    `json:"pullreqScore"`
+	IssueScore      uint64    `json:"issueScore"`
+	SpeedScore      uint64    `json:"speedScore"`
+	CreatedAt       time.Time `json:"createdAt"`
 }
