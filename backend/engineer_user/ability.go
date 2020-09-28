@@ -181,12 +181,16 @@ func calcSpeedPoint(ctx context.Context, client *github.Client, user *github.Use
 
 	speedPoint := 0.0
 
+	options := &github.CommitsListOptions{
+		Author: user.GetLogin(),
+	}
+
 	for _, repository := range repositories {
 		commits, resp, err := client.Repositories.ListCommits(
 			ctx,
 			repository.GetOwner().GetLogin(),
 			repository.GetName(),
-			nil,
+			options,
 		)
 		if err != nil {
 			// 409 means "Git Repository is empty"
