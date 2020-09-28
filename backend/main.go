@@ -4,10 +4,12 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 	"golang.org/x/oauth2"
 
 	"github.com/google/go-github/v32/github"
@@ -27,6 +29,7 @@ func main() {
 	e.GET("/test/github/repos", testGetGitHubPrivateRepos)
 
 	e.GET("/user/engineer", getEngineerUsers)
+	e.POST("/user/engineer/:id/ability", postEngineerUserAbility)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
@@ -38,14 +41,28 @@ func hello(c echo.Context) error {
 }
 
 func getEngineerUsers(c echo.Context) error {
-	mockData := []model.EngineerUser{
-		{
-			FirebaseUID: "hogehoge",
-			DisplayName: "fugafuga",
-			Email:       "hoge@hoge.com",
-			PhotoURL:    "https://hoge.com/fuga.jpg",
-		},
+	mockData, _ := repository.GetEngineerUserFromFirebaseUID("hogehgoeFirebaseUID")
+	return c.JSON(http.StatusOK, []*model.EngineerUser{mockData})
+}
+
+func postEngineerUserAbility(c echo.Context) error {
+	idParam := c.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
 	}
+
+	mockData := model.EngineerUserAbility{
+		ID:              0,
+		EngineerUserID:  id,
+		ProjectPoint:    10,
+		RepositoryPoint: 20,
+		CommitPoint:     30,
+		PullreqPoint:    40,
+		IssuePoint:      50,
+		SpeedPoint:      60,
+	}
+
 	return c.JSON(http.StatusOK, mockData)
 }
 
