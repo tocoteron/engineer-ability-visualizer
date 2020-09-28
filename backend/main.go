@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 	"golang.org/x/oauth2"
 
 	"github.com/google/go-github/v32/github"
@@ -25,6 +26,8 @@ func main() {
 	e.GET("/test/github/orgs", testGetGitHubOrgs)
 	e.GET("/test/github/repos", testGetGitHubPrivateRepos)
 
+	e.GET("/user/engineer", getEngineerUsers)
+
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
@@ -32,6 +35,18 @@ func main() {
 // Handler
 func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!")
+}
+
+func getEngineerUsers(c echo.Context) error {
+	mockData := []model.EngineerUser{
+		{
+			FirebaseUID: "hogehoge",
+			DisplayName: "fugafuga",
+			Email:       "hoge@hoge.com",
+			PhotoURL:    "https://hoge.com/fuga.jpg",
+		},
+	}
+	return c.JSON(http.StatusOK, mockData)
 }
 
 func testGetGitHubOrgs(c echo.Context) error {
