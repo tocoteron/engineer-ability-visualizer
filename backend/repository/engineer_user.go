@@ -9,11 +9,11 @@ import (
 func GetEngineerUser(id uint64) (*model.EngineerUser, error) {
 	mockData := &model.EngineerUser{
 		ID:          id,
-		FirebaseUID: "hogehogeFirebaseUID",
+		FirebaseUID: "tokorotenFirebaseUID",
 		GitHubToken: os.Getenv("GITHUB_TOKEN"),
-		DisplayName: "hoge",
-		Email:       "hoge@hoge.com",
-		PhotoURL:    "https://hoge.com/hoge.jpg",
+		DisplayName: "Tokoroten",
+		Email:       "tokoroten.lab@gmail.com",
+		PhotoURL:    "https://avatars3.githubusercontent.com/u/51188956?v=4",
 	}
 	return mockData, nil
 }
@@ -23,9 +23,9 @@ func GetEngineerUserFromFirebaseUID(firebaseUID string) (*model.EngineerUser, er
 		ID:          0,
 		FirebaseUID: firebaseUID,
 		GitHubToken: os.Getenv("GITHUB_TOKEN"),
-		DisplayName: "hoge",
-		Email:       "hoge@hoge.com",
-		PhotoURL:    "https://hoge.com/hoge.jpg",
+		DisplayName: "Tokoroten",
+		Email:       "tokoroten.lab@gmail.com",
+		PhotoURL:    "https://avatars3.githubusercontent.com/u/51188956?v=4",
 	}
 	return mockData, nil
 }
