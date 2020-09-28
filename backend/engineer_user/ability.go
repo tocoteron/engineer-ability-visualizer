@@ -2,6 +2,8 @@ package engineer_user
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/google/go-github/v32/github"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
@@ -21,34 +23,44 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
-	client := github.NewClient(tc)
+	githubClient := github.NewClient(tc)
 
-	projectPoint, err := CalcProjectPoint(client)
+	githubUser, err := getAuthenticatedUser(ctx, githubClient)
 	if err != nil {
 		return nil, err
 	}
 
-	repositoryPoint, err := CalcRepositoryPoint(client)
+	githubUserEvents, err := getAuthenticatedUserEvents(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
 
-	commitPoint, err := CalcCommitPoint(client)
+	projectPoint, err := calcProjectPoint(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
 
-	pullreqPoint, err := CalcPullreqPoint(client)
+	repositoryPoint, err := calcRepositoryPoint(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
 
-	issuePoint, err := CalcIssuePoint(client)
+	commitPoint, err := calcCommitPoint(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 
-	speedPoint, err := CalcSpeedPoint(client)
+	pullreqPoint, err := calcPullreqPoint(githubUserEvents)
+	if err != nil {
+		return nil, err
+	}
+
+	issuePoint, err := calcIssuePoint(githubUserEvents)
+	if err != nil {
+		return nil, err
+	}
+
+	speedPoint, err := calcSpeedPoint(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
@@ -62,31 +74,139 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 		PullreqPoint:    pullreqPoint,
 		IssuePoint:      issuePoint,
 		SpeedPoint:      speedPoint,
+		CreatedAt:       time.Now(),
 	}
 
 	return ability, nil
 }
 
-func CalcProjectPoint(githubClient *github.Client) (uint64, error) {
-	return 10, nil
+func getAuthenticatedUser(ctx context.Context, githubClient *github.Client) (*github.User, error) {
+	user, _, err := githubClient.Users.Get(ctx, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
-func CalcRepositoryPoint(githubClient *github.Client) (uint64, error) {
-	return 20, nil
+func getAuthenticatedUserEvents(ctx context.Context, client *github.Client, user *github.User) ([]*github.Event, error) {
+	perPage := 100
+	maxPageCount := 2
+
+	res := []*github.Event{}
+
+	for page := 1; page <= maxPageCount; page++ {
+		listOptions := &github.ListOptions{
+			PerPage: perPage,
+			Page:    page,
+		}
+
+		events, _, err := client.Activity.ListEventsPerformedByUser(
+			ctx,
+			user.GetLogin(),
+			false,
+			listOptions,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+
+		res = append(res, events...)
+	}
+
+	return res, nil
 }
 
-func CalcCommitPoint(githubClient *github.Client) (uint64, error) {
-	return 30, nil
+func calcProjectPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+	projects, _, err := client.Users.ListProjects(ctx, user.GetLogin(), nil)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint64(len(projects)), nil
 }
 
-func CalcPullreqPoint(githubClient *github.Client) (uint64, error) {
-	return 40, nil
+func calcRepositoryPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+	repositories, _, err := client.Repositories.List(ctx, "", nil)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint64(len(repositories)), nil
 }
 
-func CalcIssuePoint(githubClient *github.Client) (uint64, error) {
-	return 50, nil
+func calcCommitPoint(events []*github.Event) (uint64, error) {
+	commits := []*github.Event{}
+
+	for _, event := range events {
+		if event.GetType() == "PushEvent" {
+			commits = append(commits, event)
+		}
+	}
+
+	return uint64(len(commits)), nil
 }
 
-func CalcSpeedPoint(githubClient *github.Client) (uint64, error) {
-	return 60, nil
+func calcPullreqPoint(events []*github.Event) (uint64, error) {
+	pullreqs := []*github.Event{}
+
+	for _, event := range events {
+		if event.GetType() == "PullRequestEvent" {
+			pullreqs = append(pullreqs, event)
+		}
+	}
+
+	return uint64(len(pullreqs)), nil
+}
+
+func calcIssuePoint(events []*github.Event) (uint64, error) {
+	issues := []*github.Event{}
+
+	for _, event := range events {
+		eventType := event.GetType()
+		if eventType == "IssuesEvent" || eventType == "IssueCommentEvent" {
+			issues = append(issues, event)
+		}
+	}
+
+	return uint64(len(issues)), nil
+}
+
+func calcSpeedPoint(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+	repositories, _, err := client.Repositories.List(ctx, "", nil)
+	if err != nil {
+		return 0, err
+	}
+
+	speedPoint := 0.0
+
+	for _, repository := range repositories {
+		commits, resp, err := client.Repositories.ListCommits(
+			ctx,
+			repository.GetOwner().GetLogin(),
+			repository.GetName(),
+			nil,
+		)
+		if err != nil {
+			// 409 means "Git Repository is empty"
+			if resp.StatusCode != 409 {
+				return 0, err
+			}
+		}
+
+		if len(commits) >= 2 {
+			duration := calcDurationBetween2Commits(
+				commits[len(commits)-1].GetCommit(),
+				commits[0].GetCommit(),
+			)
+			speedPoint += float64(len(commits)) / duration.Hours()
+		}
+	}
+
+	return uint64(speedPoint), nil
+}
+
+func calcDurationBetween2Commits(first *github.Commit, last *github.Commit) time.Duration {
+	return last.GetCommitter().GetDate().Sub(first.GetCommitter().GetDate())
 }

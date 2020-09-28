@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -50,12 +51,14 @@ func postEngineerUserAbility(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil {
+		log.Println(err)
 		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
 	}
 
 	mockData, err := engineer_user.CalcEngineerUserAbility(id)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Calc ability has failed")
+		log.Println(err)
+		return c.String(http.StatusInternalServerError, "Calc engineer ability has failed")
 	}
 
 	return c.JSON(http.StatusOK, mockData)
