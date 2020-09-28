@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import EngineerUserAbilityType from '../models/EngineerUserAbility';
+import EngineerUserAbilityReportType from '../models/EngineerUserAbilityReport';
 import EngineerUserAbility from '../components/EngineerUserAbility';
 import API from '../api';
 
 export default function EngineerUserAbilityPage() {
-  const [abilities, setAbilities] = useState<EngineerUserAbilityType[]>([]);
+  const [abilityReports, setAbilityReports] = useState<EngineerUserAbilityReportType[]>([]);
 
   useEffect(() => {
     const f = async () => {
-      const json = await API.getEngineerUserAbilities(0);
+      const json = await API.getEngineerUserAbilityReports(0);
       console.log(json);
 
-      setAbilities(json);
+      setAbilityReports(json);
     }
 
     f();
@@ -19,9 +19,9 @@ export default function EngineerUserAbilityPage() {
 
   return (
     <div>
-    { abilities !== undefined &&
+    { abilityReports !== undefined &&
       <EngineerUserAbility
-        abilities={abilities}
+        abilities={abilityReports}
       />
     }
     </div>

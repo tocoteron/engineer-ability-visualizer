@@ -1,4 +1,4 @@
-export default interface EngineerUserAbility {
+export default interface EngineerUserAbilityReport {
   id: number;
   engineerUserId: number;
   projectScore: number;

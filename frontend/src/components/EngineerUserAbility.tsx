@@ -1,5 +1,5 @@
 import React from 'react';
-import EngineerUserAbilityType from '../models/EngineerUserAbility'
+import EngineerUserAbilityType from '../models/EngineerUserAbilityReport'
 
 interface Props {
   abilities: EngineerUserAbilityType[];
