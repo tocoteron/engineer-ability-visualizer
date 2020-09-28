@@ -1,34 +1,54 @@
 package engineer_user
 
-import "github.com/tokoroten-lab/engineer-ability-visualizer/model"
+import (
+	"context"
+
+	"github.com/google/go-github/v32/github"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
+	"golang.org/x/oauth2"
+)
 
 func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility, error) {
-	projectPoint, err := CalcProjectPoint()
+	engineerUser, err := repository.GetEngineerUser(engineerUserID)
 	if err != nil {
 		return nil, err
 	}
 
-	repositoryPoint, err := CalcRepositoryPoint()
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: engineerUser.GitHubToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client := github.NewClient(tc)
+
+	projectPoint, err := CalcProjectPoint(client)
 	if err != nil {
 		return nil, err
 	}
 
-	commitPoint, err := CalcCommitPoint()
+	repositoryPoint, err := CalcRepositoryPoint(client)
 	if err != nil {
 		return nil, err
 	}
 
-	pullreqPoint, err := CalcPullreqPoint()
+	commitPoint, err := CalcCommitPoint(client)
 	if err != nil {
 		return nil, err
 	}
 
-	issuePoint, err := CalcIssuePoint()
+	pullreqPoint, err := CalcPullreqPoint(client)
 	if err != nil {
 		return nil, err
 	}
 
-	speedPoint, err := CalcSpeedPoint()
+	issuePoint, err := CalcIssuePoint(client)
+	if err != nil {
+		return nil, err
+	}
+
+	speedPoint, err := CalcSpeedPoint(client)
 	if err != nil {
 		return nil, err
 	}
@@ -47,26 +67,26 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbility,
 	return ability, nil
 }
 
-func CalcProjectPoint() (uint64, error) {
+func CalcProjectPoint(githubClient *github.Client) (uint64, error) {
 	return 10, nil
 }
 
-func CalcRepositoryPoint() (uint64, error) {
+func CalcRepositoryPoint(githubClient *github.Client) (uint64, error) {
 	return 20, nil
 }
 
-func CalcCommitPoint() (uint64, error) {
+func CalcCommitPoint(githubClient *github.Client) (uint64, error) {
 	return 30, nil
 }
 
-func CalcPullreqPoint() (uint64, error) {
+func CalcPullreqPoint(githubClient *github.Client) (uint64, error) {
 	return 40, nil
 }
 
-func CalcIssuePoint() (uint64, error) {
+func CalcIssuePoint(githubClient *github.Client) (uint64, error) {
 	return 50, nil
 }
 
-func CalcSpeedPoint() (uint64, error) {
+func CalcSpeedPoint(githubClient *github.Client) (uint64, error) {
 	return 60, nil
 }
