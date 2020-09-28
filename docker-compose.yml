@@ -16,7 +16,7 @@ services:
     build:
       context: ./backend
     working_dir: /app
-    command: go run main.go
+    command: reflex -r '\.go$$' -s -- sh -c 'go run main.go'
     ports:
       - 1323:1323
     volumes:
