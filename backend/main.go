@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/engineer_user"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 	"golang.org/x/oauth2"
@@ -52,15 +53,9 @@ func postEngineerUserAbility(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
 	}
 
-	mockData := model.EngineerUserAbility{
-		ID:              0,
-		EngineerUserID:  id,
-		ProjectPoint:    10,
-		RepositoryPoint: 20,
-		CommitPoint:     30,
-		PullreqPoint:    40,
-		IssuePoint:      50,
-		SpeedPoint:      60,
+	mockData, err := engineer_user.CalcEngineerUserAbility(id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Calc ability has failed")
 	}
 
 	return c.JSON(http.StatusOK, mockData)
