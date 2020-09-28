@@ -10,7 +10,7 @@ export default function EngineerUserAbility(props: Props) {
     <div>
     { props.abilities.map((ability) => {
       return (
-        <div>
+        <div key={ability.id}>
           <p>{ability.id}</p>
           <p>{ability.engineerUserId}</p>
           <p>{ability.projectScore}</p>
