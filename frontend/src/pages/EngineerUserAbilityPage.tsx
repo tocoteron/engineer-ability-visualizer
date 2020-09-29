@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import EngineerUserAbilityReportType from '../models/EngineerUserAbilityReport';
+import { useParams } from "react-router-dom";
+import EngineerUser from '../models/EngineerUser';
+import EngineerUserAbilityReport from '../models/EngineerUserAbilityReport';
 import EngineerUserAbility from '../components/EngineerUserAbility';
 import API from '../api';
 
 export default function EngineerUserAbilityPage() {
-  const [abilityReports, setAbilityReports] = useState<EngineerUserAbilityReportType[]>([]);
+  const { engineerUserId } = useParams<{engineerUserId: string}>();
+  const [engineerUser, setEngineerUser] = useState<EngineerUser>();
+  const [abilityReports, setAbilityReports] = useState<EngineerUserAbilityReport[]>([]);
 
   useEffect(() => {
     const f = async () => {
-      const json = await API.getEngineerUserAbilityReports(0);
-      console.log(json);
+      try {
+        const engineerUser = await API.getEngineerUser(Number(engineerUserId));
+        console.log(engineerUser);
 
-      setAbilityReports(json);
+        const abilityReports = await API.getEngineerUserAbilityReports(Number(engineerUserId));
+        console.log(abilityReports);
+
+        setEngineerUser(engineerUser);
+        setAbilityReports(abilityReports);
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     f();
@@ -19,7 +31,7 @@ export default function EngineerUserAbilityPage() {
 
   return (
     <div>
-    { abilityReports !== undefined &&
+    { abilityReports && engineerUser &&
       <EngineerUserAbility
         abilities={abilityReports}
       />
