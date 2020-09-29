@@ -15,8 +15,10 @@ import {
   ListItemText
 } from '@material-ui/core';
 import {
-  Inbox as InboxIcon,
-  Mail as MailIcon,
+  PersonAdd as PersonAddIcon,
+  VpnKey as VpnKeyIcon,
+  ExitToApp as ExitToAppIcon,
+  People as PeopleIcon,
 } from '@material-ui/icons';
 import ListItemLink from './components/ListItemLink';
 import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
@@ -67,10 +69,12 @@ function App() {
                 <ListItemLink
                   to="/register"
                   primary="新規登録"
+                  icon={<PersonAddIcon />}
                 />
                 <ListItemLink
                   to="/login"
                   primary="ログイン"
+                  icon={<VpnKeyIcon />}
                 />
               </>
             )}
@@ -82,20 +86,26 @@ function App() {
                   await logout()
                 }}
               >
+                <ListItemIcon>
+                  <ExitToAppIcon />
+                </ListItemIcon>
                 <ListItemText primary={"ログアウト"} />
               </ListItem>
             )}
           </List>
           <Divider />
-          <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem button key={text} onClick={() => console.log("yeah")}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
+          { user && (
+            <>
+              <List>
+                <ListItemLink
+                  to="/engineers"
+                  primary="エンジニアリスト"
+                  icon={<PeopleIcon />}
+                />
+              </List>
+              <Divider />
+            </>
+          )}
         </Drawer>
         <div className={classes.content}>
           <Switch>
