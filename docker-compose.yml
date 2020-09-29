@@ -24,6 +24,8 @@ services:
       context: ./backend
     working_dir: /app
     command: reflex -r '\.go$$' -s -- sh -c 'go run main.go'
+    environment:
+      - DATABASE_DATASOURCE=${DATABASE_DATASOURCE}
     ports:
       - 1323:1323
     volumes:

@@ -35,3 +35,5 @@ flyway/repair:
 
 flyway/baseline:
 	docker-compose run --rm $(MIGRATION_SERVICE) $(FLYWAY_CONF) baseline
+
+export DATABASE_DATASOURCE:=root:password@tcp($(DB_SERVICE):3306)/$(DB_NAME)

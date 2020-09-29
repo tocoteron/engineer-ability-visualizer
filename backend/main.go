@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -13,6 +15,8 @@ import (
 )
 
 func main() {
+	fmt.Println("DB_SOURCE:", os.Getenv("DATABASE_DATASOURCE"))
+
 	// Echo instance
 	e := echo.New()
 
