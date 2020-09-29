@@ -12,7 +12,7 @@ import (
 )
 
 func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityReport, error) {
-	engineerUser, err := repository.GetEngineerUser(engineerUserID)
+	engineerUser, err := repository.GetEngineerUser(nil, engineerUserID)
 	if err != nil {
 		return nil, err
 	}
