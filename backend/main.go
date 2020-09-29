@@ -7,15 +7,24 @@ import (
 	"os"
 	"strconv"
 
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/custom_middleware"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/engineer_user"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 )
 
 func main() {
+	databaseDatasource := os.Getenv("DATABASE_DATASOURCE")
 	fmt.Println("DB_SOURCE:", os.Getenv("DATABASE_DATASOURCE"))
+
+	db, err := sqlx.Open("mysql", databaseDatasource)
+	if err != nil {
+		panic(err)
+	}
 
 	// Echo instance
 	e := echo.New()
@@ -24,6 +33,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
+	e.Use(custom_middleware.DBMIddleware(db))
 
 	// Routes
 	e.GET("/", hello)
