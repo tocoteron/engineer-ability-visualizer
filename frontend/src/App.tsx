@@ -96,16 +96,6 @@ function App() {
           </List>
           <Divider />
         </Drawer>
-        { user !== null &&
-          <div>
-            <p>{user.email}</p>
-            <button
-              onClick={() => logout()}
-            >
-              ログアウト
-            </button>
-          </div>
-        }
         <div className={classes.content}>
           <Switch>
             <Route path="/user/engineer/:engineerUserId">
