@@ -10,6 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/controller"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 )
 
 func main() {
@@ -17,6 +19,20 @@ func main() {
 	fmt.Println("DB_SOURCE:", os.Getenv("DATABASE_DATASOURCE"))
 
 	db, err := sqlx.Open("mysql", databaseDatasource)
+	if err != nil {
+		panic(err)
+	}
+
+	mockEngineerUser := &model.EngineerUser{
+		ID:          0,
+		FirebaseUID: "tokorotenFirebaseUID",
+		GitHubToken: os.Getenv("GITHUB_TOKEN"),
+		LoginName:   "tokoroten-lab",
+		DisplayName: "Tokoroten",
+		Email:       "tokoroten.lab@gmail.com",
+		PhotoURL:    "https://avatars3.githubusercontent.com/u/51188956?v=4",
+	}
+	_, err = repository.SyncEngineerUser(db, mockEngineerUser)
 	if err != nil {
 		panic(err)
 	}

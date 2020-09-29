@@ -1,11 +1,24 @@
 package repository
 
 import (
+	"database/sql"
 	"os"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 )
+
+func SyncEngineerUser(db *sqlx.DB, eu *model.EngineerUser) (sql.Result, error) {
+	return db.Exec(`
+INSERT INTO engineer_users (firebase_uid, github_token, email, login_name, display_name, photo_url)
+VALUES (?, ?, ?, ?, ?, ?)
+ON DUPLICATE KEY
+UPDATE email = ?, login_name = ?, display_name = ?, photo_url = ?
+`,
+		eu.FirebaseUID, eu.GitHubToken, eu.Email, eu.LoginName, eu.DisplayName, eu.PhotoURL,
+		eu.Email, eu.LoginName, eu.DisplayName, eu.PhotoURL,
+	)
+}
 
 func GetEngineerUser(db *sqlx.DB, id uint64) (*model.EngineerUser, error) {
 	mockData := &model.EngineerUser{
