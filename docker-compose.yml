@@ -25,6 +25,7 @@ services:
     working_dir: /app
     command: reflex -r '\.go$$' -s -- sh -c 'go run main.go'
     environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
       - DATABASE_DATASOURCE=${DATABASE_DATASOURCE}
     ports:
       - 1323:1323
