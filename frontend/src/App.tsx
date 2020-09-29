@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     width: drawerWidth,
   },
-  // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
   content: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
@@ -61,7 +59,6 @@ function App() {
           }}
           anchor="left"
         >
-          <div className={classes.toolbar} />
           <List>
             { !user && (
               <>
