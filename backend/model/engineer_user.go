@@ -1,10 +1,11 @@
 package model
 
 type EngineerUser struct {
-	ID          uint64 `json:"id"`
-	FirebaseUID string `json:"firebaseUID"`
-	GitHubToken string `json:"githubToken"`
-	DisplayName string `json:"displayName"`
-	Email       string `json:"email"`
-	PhotoURL    string `json:"photoURL"`
+	ID          uint64 `db:"id" json:"id"`
+	FirebaseUID string `db:"firebase_uid" json:"firebaseUID"`
+	GitHubToken string `db:"github_token" json:"githubToken"`
+	LoginName   string `db:"login_name" json:"loginName"`
+	DisplayName string `db:"display_name" json:"displayName"`
+	Email       string `db:"email" json:"email"`
+	PhotoURL    string `db:"photo_url" json:"photoURL"`
 }
