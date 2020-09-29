@@ -4,6 +4,9 @@ up:
 down:
 	docker-compose down
 
+env:
+	cp ./frontend/example.env ./frontend/.env
+
 DB_SERVICE:=db
 DB_NAME:=engineer-ability-visualizer
 db/client:
