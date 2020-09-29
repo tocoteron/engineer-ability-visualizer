@@ -21,6 +21,7 @@ import {
 import ListItemLink from './components/ListItemLink';
 import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
 import RegisterHRUserPage from './pages/RegisterHRUserPage';
+import LoginHRUserPage from './pages/LoginHRUserPage';
 
 const drawerWidth = 240;
 
@@ -105,7 +106,7 @@ function App() {
               <RegisterHRUserPage successCallbackPath="/" />
             </Route>
             <Route path="/login">
-              <p>Login</p>
+              <LoginHRUserPage successCallbackPath="/" />
             </Route>
           </Switch>
         </div>
