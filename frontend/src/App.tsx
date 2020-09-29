@@ -20,6 +20,7 @@ import {
 } from '@material-ui/icons';
 import ListItemLink from './components/ListItemLink';
 import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
+import RegisterHRUserPage from './pages/RegisterHRUserPage';
 
 const drawerWidth = 240;
 
@@ -111,7 +112,7 @@ function App() {
               <EngineerUserAbilityPage />
             </Route>
             <Route path="/register">
-              <p>Register</p>
+              <RegisterHRUserPage />
             </Route>
             <Route path="/login">
               <p>Login</p>
