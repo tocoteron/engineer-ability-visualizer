@@ -33,6 +33,7 @@ export default function EngineerUserAbilityPage() {
     <div>
     { abilityReports && engineerUser &&
       <EngineerUserAbility
+        engineerUser={engineerUser}
         abilities={abilityReports}
       />
     }
