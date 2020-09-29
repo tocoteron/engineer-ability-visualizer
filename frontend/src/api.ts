@@ -1,7 +1,7 @@
 import EngineerUserAbilityReport from "./models/EngineerUserAbilityReport";
 import EngineerUser from "./models/EngineerUser";
 
-const API_BASE_URL = "http://localhost:1323";
+const API_BASE_URL = process.env.REACT_APP_BACKEND_API_BASE;
 
 async function getEngineerUserAbilityReports(engineerUserId: number) {
     const res = await fetch(`${API_BASE_URL}/user/engineer/${engineerUserId}/ability`);
