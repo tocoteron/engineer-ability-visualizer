@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import Container from '@material-ui/core/Container';
 import { TextField, Button, createStyles, makeStyles, Theme } from '@material-ui/core';
 import useUser from '../hooks/useUser';
+import { RouteComponentProps, withRouter } from 'react-router';
+
+interface Props extends RouteComponentProps<{}> {
+  successCallbackPath: string;
+}
 
 interface FormState {
   email: string;
@@ -27,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function RegisterHRUserPage() {
+function RegisterHRUserPage(props: Props) {
   const classes = useStyles();
   const { create } = useUser();
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -52,6 +57,7 @@ export default function RegisterHRUserPage() {
       await create(form.email, form.password);
       setErrorMessage("");
       setForm(initFormState);
+      props.history.push(props.successCallbackPath);
     } catch(err) {
       setErrorMessage(err.message)
     }
@@ -88,3 +94,5 @@ export default function RegisterHRUserPage() {
     </Container>
   );
 }
+
+export default withRouter(RegisterHRUserPage);

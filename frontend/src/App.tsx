@@ -102,7 +102,7 @@ function App() {
               <EngineerUserAbilityPage />
             </Route>
             <Route path="/register">
-              <RegisterHRUserPage />
+              <RegisterHRUserPage successCallbackPath="/" />
             </Route>
             <Route path="/login">
               <p>Login</p>
