@@ -8,6 +8,11 @@ interface FormState {
   password: string;
 }
 
+const initFormState: FormState = {
+  email: "",
+  password: "",
+}
+
 type FormChangeEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -25,11 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function RegisterHRUserPage() {
   const classes = useStyles();
   const { create } = useUser();
-  const [errorMessage, setError] = useState<string>("");
-  const [form, setForm] = useState<FormState>({
-    email: "",
-    password: "",
-  });
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [form, setForm] = useState<FormState>(initFormState);
 
   function onChangeEmail(e: FormChangeEvent) {
     setForm({
@@ -48,8 +50,10 @@ export default function RegisterHRUserPage() {
   async function registerHRUser() {
     try {
       await create(form.email, form.password);
+      setErrorMessage("");
+      setForm(initFormState);
     } catch(err) {
-      setError(err.message)
+      setErrorMessage(err.message)
     }
   }
 
