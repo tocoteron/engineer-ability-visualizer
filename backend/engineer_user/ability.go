@@ -3,23 +3,25 @@ package engineer_user
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/go-github/v32/github"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
-	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 	"golang.org/x/oauth2"
 )
 
 func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityReport, error) {
-	engineerUser, err := repository.GetEngineerUser(nil, engineerUserID)
-	if err != nil {
-		return nil, err
-	}
+	/*
+		engineerUser, err := repository.GetEngineerUser(nil, engineerUserID)
+		if err != nil {
+			return nil, err
+		}
+	*/
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: engineerUser.GitHubToken},
+		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
