@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Container, Grid, makeStyles, TextField } from '@material-ui/core';
+import { Button, Container, Divider, Grid, makeStyles, TextField } from '@material-ui/core';
 import mock from '../mock';
 import EngineerUser from '../models/EngineerUser';
 import { Link } from 'react-router-dom';
@@ -32,7 +32,41 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type FormChangeEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
-type OnClickEvent = React.MouseEvent<HTMLAnchorElement, MouseEvent>;
+
+function EngineerUserCard(props: {engineerUser: EngineerUser}) {
+  const engineerUser = props.engineerUser;
+
+  return (
+    <div className="engineer">
+      <Grid container spacing={3}>
+        <Grid item xs={2}>
+          <img
+            width="100"
+            height="100"
+            src={props.engineerUser.photoURL}
+            style={{
+              borderRadius: "50%",
+            }}
+          ></img>
+        </Grid>
+        <Grid item xs={8}>
+          <h2>
+            {engineerUser.displayName}さん
+            (<Link to={`/engineers/${engineerUser.id}`}>
+              詳細ページ
+            </Link>)
+          </h2>
+          <h3>GitHubアカウント:
+            <a href={`https://github.com/${props.engineerUser.loginName}`} target="_blank">
+              {props.engineerUser.loginName}
+            </a>
+          </h3>
+        </Grid>
+      </Grid>
+      <Divider></Divider>
+    </div>
+  );
+}
 
 export default function EngineerUserListPage() {
   const classes = useStyles();
@@ -92,15 +126,12 @@ export default function EngineerUserListPage() {
       </Grid>
       <div className="engineers">
         {
-          engineerUsers.map((engineerUser) => {
-            return (
-              <div className="engineer">
-                <Link to={`/engineers/${engineerUser.id}`}>
-                  {engineerUser.displayName}さん
-                </Link>
-              </div>
-            );
-          })
+          engineerUsers.map((engineerUser) => (
+            <EngineerUserCard
+              key={engineerUser.id}
+              engineerUser={engineerUser}
+            />
+          ))
         }
       </div>
     </Container>
