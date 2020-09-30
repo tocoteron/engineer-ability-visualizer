@@ -109,7 +109,7 @@ function App() {
         </Drawer>
         <div className={classes.content}>
           <Switch>
-            <Route path="/user/engineer/:engineerUserId">
+            <Route path="/engineers/:engineerUserId">
               <EngineerUserAbilityPage />
             </Route>
             <Route path="/register">
