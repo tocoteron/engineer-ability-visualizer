@@ -5,17 +5,22 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/go-github/v32/github"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 )
 
 type EngineerUser struct {
-	db *sqlx.DB
+	db     *sqlx.DB
+	github *github.Client
 }
 
-func NewEngineerUser(db *sqlx.DB) *EngineerUser {
-	return &EngineerUser{db: db}
+func NewEngineerUser(db *sqlx.DB, github *github.Client) *EngineerUser {
+	return &EngineerUser{
+		db:     db,
+		github: github,
+	}
 }
 
 func (a *EngineerUser) GetAll(c echo.Context) error {

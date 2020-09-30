@@ -80,25 +80,39 @@ export default function EngineerUserListPage() {
     setGithubURL(e.target.value);
   }
 
-  function addEngineerUser() {
+  async function addEngineerUser() {
     if (githubURL.indexOf("https://github.com/") !== 0) {
       setErrorMessage("Invalid GitHub account url");
       return;
     }
 
+    if (user === null) {
+      return;
+    }
+
     // https://github.com/tokoroten-lab
     const engineerUserLoginName = githubURL.split('/')[3];
-    const engineerUserId = mock.getRandomInt(0, 1000);
 
+    try {
+      const token = await user.getIdToken();
+      const engineerUser = await api.addEngineerToList(token, engineerUserLoginName);
+
+      setEngineerUsers([engineerUser, ...engineerUsers]);
+      setErrorMessage("");
+    } catch(err) {
+      console.error(err);
+    }
+
+    /*
+    const engineerUserId = mock.getRandomInt(0, 1000);
     const engineerUser: EngineerUser = {
       id: engineerUserId,
       loginName: engineerUserLoginName,
       displayName: `${engineerUserLoginName}`,
       photoURL: "https://avatars3.githubusercontent.com/u/51188956?v=4",
     };
+    */
 
-    setEngineerUsers([engineerUser, ...engineerUsers]);
-    setErrorMessage("");
   }
 
   useEffect(() => {

@@ -1,20 +1,29 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/go-github/v32/github"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/controller"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/firebase"
 	mymiddleware "github.com/tokoroten-lab/engineer-ability-visualizer/middleware"
+	"golang.org/x/oauth2"
 )
 
 func main() {
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
+	)
+	tc := oauth2.NewClient(context.Background(), ts)
+	githubClient := github.NewClient(tc)
+
 	authClient, err := firebase.InitAuthClient("firebaseServiceAccountKey.json")
 	if err != nil {
 		panic(err)
@@ -28,24 +37,9 @@ func main() {
 		panic(err)
 	}
 
-	/*
-		mockEngineerUser := &model.EngineerUser{
-			ID:          0,
-			FirebaseUID: "tokorotenFirebaseUID",
-			GitHubToken: os.Getenv("GITHUB_TOKEN"),
-			LoginName:   "tokoroten-lab",
-			DisplayName: "Tokoroten",
-			Email:       "tokoroten.lab@gmail.com",
-			PhotoURL:    "https://avatars3.githubusercontent.com/u/51188956?v=4",
-		}
-		_, err = repository.SyncEngineerUser(db, mockEngineerUser)
-		if err != nil {
-			panic(err)
-		}
-	*/
-
 	// Controllers
-	engineerUserController := controller.NewEngineerUser(db)
+	engineerUserController := controller.NewEngineerUser(db, githubClient)
+	hrUserController := controller.NewHRUser(db, githubClient)
 	engineerUserAbilityReportController := controller.NewEngineerUserAbilityReport(db)
 
 	// Echo instance
@@ -66,6 +60,8 @@ func main() {
 
 	e.POST("/user/engineer/:id/ability", engineerUserAbilityReportController.Create)
 	e.GET("/user/engineer/:id/ability", engineerUserAbilityReportController.Get)
+
+	e.POST("/hr_user/engineers/:githubLoginName", hrUserController.AddEngineerToList, auth.FirebaseAuthMiddleware)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
