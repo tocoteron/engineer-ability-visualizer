@@ -2,6 +2,9 @@ import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import EngineerUser from '../models/EngineerUser';
 import EngineerUserAbilityType from '../models/EngineerUserAbilityReport'
+import {CartesianGrid, Line, LineChart, XAxis, Tooltip} from 'recharts';
+import { create } from 'domain';
+import { createJsxSpreadAttribute } from 'typescript';
 
 interface Props {
   engineerUser: EngineerUser;
@@ -66,6 +69,30 @@ export default function EngineerUserAbility(props: Props) {
             <p>コミットスピードスコア {props.abilities[0].speedScore}</p>
           </Grid>
         </Grid>
+      </div>
+      <div className="chart">
+        <LineChart
+          width={600}
+          height={400}
+          data={props.abilities.map((ability) => ({
+            ...ability,
+            createdAt: ability.createdAt.toLocaleDateString(),
+          }))}
+          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        >
+          <XAxis
+            dataKey="createdAt"
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={(createdAt) => {
+              return createdAt;
+            }}
+          />
+          <Tooltip
+          />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Line type="monotone" dataKey="speedScore" stroke="#ff7300" yAxisId={0} />
+          <Line type="monotone" dataKey="projectScore" stroke="#387908" yAxisId={1} />
+        </LineChart>
       </div>
     </Container>
   );

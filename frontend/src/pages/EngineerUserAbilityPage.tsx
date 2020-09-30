@@ -24,7 +24,7 @@ export default function EngineerUserAbilityPage() {
     const range = Array(10).fill(0).map((v, i) => i + 1);
     const mockAbilityReports: EngineerUserAbilityReport[] = range.map<EngineerUserAbilityReport>((i) => {
       const createdAt = new Date();
-      createdAt.setHours(createdAt.getHours() - 1);
+      createdAt.setDate(createdAt.getDate() + i);
       return {
         id: i,
         engineerUserId: Number(engineerUserId),
