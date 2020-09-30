@@ -1,17 +1,44 @@
-import { Container, Grid } from '@material-ui/core';
+import { Container, Divider, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import EngineerUser from '../models/EngineerUser';
 import EngineerUserAbilityType from '../models/EngineerUserAbilityReport'
-import {CartesianGrid, Line, LineChart, XAxis, Tooltip} from 'recharts';
-import { create } from 'domain';
-import { createJsxSpreadAttribute } from 'typescript';
+import {CartesianGrid, Line, LineChart, XAxis, Tooltip, ResponsiveContainer} from 'recharts';
 
 interface Props {
   engineerUser: EngineerUser;
   abilities: EngineerUserAbilityType[];
 }
 
+const engineerScoreColor = "#333";
+const detectabilityScoreColor = "#f44";
+const solvingScoreColor = "#3d3";
+const speedScoreColor = "#33f";
+
+const useStyles = makeStyles((theme) => ({
+  engineerScore: {
+    color: engineerScoreColor,
+  },
+  detectabilityScore: {
+    color: detectabilityScoreColor,
+  },
+  solvingScore: {
+    color: solvingScoreColor,
+  },
+  speedScore: {
+    color: speedScoreColor,
+  }
+}));
+
 export default function EngineerUserAbility(props: Props) {
+  const classes = useStyles();
+  const { engineerUser, abilities } = props;
+
+  function calcEngineerScore(ability: EngineerUserAbilityType) {
+    return calcDetectabilityScore(ability)
+      + calcSolvingScore(ability)
+      + calcSpeedScore(ability);
+  }
+
   function calcDetectabilityScore(ability: EngineerUserAbilityType) {
     return ability.issueScore;
   }
@@ -35,64 +62,69 @@ export default function EngineerUserAbility(props: Props) {
             <img
               width={200}
               height={200}
-              src={props.engineerUser.photoURL}
+              src={engineerUser.photoURL}
               style={{
                 borderRadius: "50%",
               }}
             ></img>
           </Grid>
           <Grid item xs={9}>
-            <h2>{props.engineerUser.displayName}さん</h2>
-            <h3>GitHubアカウント: <a href={`https://github.com/${props.engineerUser.loginName}`}>{props.engineerUser.loginName}</a></h3>
+            <h2>{engineerUser.displayName}さん</h2>
+            <h3>GitHubアカウント: <a href={`https://github.com/${engineerUser.loginName}`}>{engineerUser.loginName}</a></h3>
           </Grid>
         </Grid>
       </div>
       <div className="ability">
-        <h2>エンジニアスコア {
-          calcDetectabilityScore(props.abilities[0]) +
-          calcSolvingScore(props.abilities[0]) +
-          calcSpeedScore(props.abilities[0])
-        }</h2>
+        <h2 className={classes.engineerScore}>エンジニアスコア {calcEngineerScore(abilities[0])}</h2>
         <Grid container spacing={2}>
           <Grid item xs={3}>
-            <h3>発見力 {calcDetectabilityScore(props.abilities[0])}</h3>
-            <p>イシュースコア {props.abilities[0].issueScore}</p>
+            <h3 className={classes.detectabilityScore}>発見力 {calcDetectabilityScore(abilities[0])}</h3>
+            <p>イシュースコア {abilities[0].issueScore}</p>
           </Grid>
           <Grid item xs={3}>
-            <h3>解決力 {calcSolvingScore(props.abilities[0])}</h3>
-            <p>プロジェクトスコア {props.abilities[0].projectScore}</p>
-            <p>リポジトリスコア {props.abilities[0].repositoryScore}</p>
-            <p>コミットスコア {props.abilities[0].commitScore}</p>
+            <h3 className={classes.solvingScore}>解決力 {calcSolvingScore(abilities[0])}</h3>
+            <p>プロジェクトスコア {abilities[0].projectScore}</p>
+            <p>リポジトリスコア {abilities[0].repositoryScore}</p>
+            <p>コミットスコア {abilities[0].commitScore}</p>
           </Grid>
           <Grid item xs={3}>
-            <h3>スピード {calcSpeedScore(props.abilities[0])}</h3>
-            <p>コミットスピードスコア {props.abilities[0].speedScore}</p>
+            <h3 className={classes.speedScore}>スピード {calcSpeedScore(abilities[0])}</h3>
+            <p>コミットスピードスコア {abilities[0].speedScore}</p>
           </Grid>
         </Grid>
       </div>
       <div className="chart">
-        <LineChart
-          width={600}
-          height={400}
-          data={props.abilities.map((ability) => ({
-            ...ability,
-            createdAt: ability.createdAt.toLocaleDateString(),
-          }))}
-          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-        >
-          <XAxis
-            dataKey="createdAt"
-            domain={['dataMin', 'dataMax']}
-            tickFormatter={(createdAt) => {
-              return createdAt;
-            }}
-          />
-          <Tooltip
-          />
-          <CartesianGrid stroke="#f5f5f5" />
-          <Line type="monotone" dataKey="speedScore" stroke="#ff7300" yAxisId={0} />
-          <Line type="monotone" dataKey="projectScore" stroke="#387908" yAxisId={1} />
-        </LineChart>
+        <ResponsiveContainer width="95%" height={400}>
+          <LineChart
+            data={abilities.map((ability) => ({
+              engineerScore: calcEngineerScore(ability), 
+              detectabilityScore: calcDetectabilityScore(ability),
+              solvingScore: calcSolvingScore(ability),
+              speedScore: calcSpeedScore(ability),
+              createdAt: ability.createdAt.getTime(),
+            }))}
+            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+          >
+            <XAxis
+              dataKey="createdAt"
+              type="number"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={(createdAt: number) => {
+                return new Date(createdAt).toLocaleDateString();
+              }}
+            />
+            <Tooltip
+              labelFormatter={(createdAt) => {
+                return new Date(createdAt).toLocaleDateString();
+              }}
+            />
+            <CartesianGrid stroke="#e5e5e5" />
+            <Line type="monotone" name="エンジニアスコア" dataKey="engineerScore" stroke={engineerScoreColor} yAxisId={0} />
+            <Line type="monotone" name="発見力" dataKey="detectabilityScore" stroke={detectabilityScoreColor} yAxisId={1} />
+            <Line type="monotone" name="解決力" dataKey="solvingScore" stroke={solvingScoreColor} yAxisId={2} />
+            <Line type="monotone" name="スピード" dataKey="speedScore" stroke={speedScoreColor} yAxisId={3} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </Container>
   );
