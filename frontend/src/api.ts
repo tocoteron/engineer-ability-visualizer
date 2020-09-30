@@ -3,18 +3,23 @@ import EngineerUser from "./models/EngineerUser";
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_API_BASE;
 
+const toJson = async (res: Response) => {
+    const js = await res.json()
+    if (res.ok) {
+        return js
+    } else {
+        throw new Error(js.message)
+    }
+}
+
 async function testHRUser(idToken: string) {
     const res = await fetch(`${API_BASE_URL}/`, {
         headers: new Headers({
             Authorization: `Bearer ${idToken}`
         }),
     })
-    console.log("res", res);
 
-    const json = await res.json();
-    console.log("json", json);
-
-    return json;
+    return await toJson(res);
 };
 
 async function getEngineerUserAbilityReports(engineerUserId: number) {
