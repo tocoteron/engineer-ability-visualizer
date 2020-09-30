@@ -28,6 +28,11 @@ func NewAuth(client *auth.Client, db *sqlx.DB) *Auth {
 	}
 }
 
+type FirebaseAuthContext struct {
+	echo.Context
+	HRUser *model.HRUser
+}
+
 func (auth *Auth) FirebaseAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		idToken, err := getTokenFromHeader(c.Request())
@@ -54,45 +59,18 @@ func (auth *Auth) FirebaseAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc
 		}
 		log.Println("Complete sync hr_users")
 
-		return next(c)
+		hrUser, err := repository.GetHRUserByFirebaseUID(auth.db, firebaseUser.FirebaseUID)
+		if err != nil {
+			return err
+		}
+
+		cc := &FirebaseAuthContext{
+			c,
+			hrUser,
+		}
+
+		return next(cc)
 	}
-}
-
-func (auth *Auth) Handler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		/*
-			idToken, err := getTokenFromHeader(r)
-			if err != nil {
-				httputil.RespondErrorJson(w, http.StatusBadRequest, err)
-				return
-			}
-			token, err := auth.client.VerifyIDToken(r.Context(), idToken)
-			if err != nil {
-				httputil.RespondErrorJson(w, http.StatusForbidden, err)
-				return
-			}
-			userRecord, err := auth.client.GetUser(r.Context(), token.UID)
-			if err != nil {
-				httputil.RespondErrorJson(w, http.StatusInternalServerError, err)
-				return
-			}
-			firebaseUser := toFirebaseUser(userRecord)
-			_, syncErr := repository.SyncUser(auth.db, &firebaseUser)
-			if syncErr != nil {
-				httputil.RespondErrorJson(w, http.StatusInternalServerError, syncErr)
-				return
-			}
-
-			user, err := repository.GetUser(auth.db, firebaseUser.FirebaseUID)
-			if err != nil {
-				log.Print(err.Error())
-				httputil.RespondErrorJson(w, http.StatusInternalServerError, err)
-				return
-			}
-			ctx := httputil.SetUserToContext(r.Context(), user)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		*/
-	})
 }
 
 func getTokenFromHeader(req *http.Request) (string, error) {

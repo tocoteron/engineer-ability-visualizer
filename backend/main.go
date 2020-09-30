@@ -73,13 +73,9 @@ func main() {
 
 // Handler
 func hello(c echo.Context) error {
-	type Response struct {
-		Message string
-	}
+	cc := c.(*mymiddleware.FirebaseAuthContext)
 
-	res := &Response{
-		Message: "Hello, World!",
-	}
+	fmt.Println("Unko")
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, cc.HRUser)
 }
