@@ -1,3 +1,4 @@
 .env
 
+.cert/
 sample-data/
