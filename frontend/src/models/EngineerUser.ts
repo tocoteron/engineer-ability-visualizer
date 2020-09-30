@@ -1,7 +1,6 @@
 export default interface EngineerUser {
-    id: number
-	firebaseUID: string
+	id: number
+	loginName: string
 	displayName: string
-	email: string
     photoURL: string
 }

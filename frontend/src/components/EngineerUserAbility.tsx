@@ -1,3 +1,4 @@
+import { Container, Grid } from '@material-ui/core';
 import React from 'react';
 import EngineerUser from '../models/EngineerUser';
 import EngineerUserAbilityType from '../models/EngineerUserAbilityReport'
@@ -24,35 +25,48 @@ export default function EngineerUserAbility(props: Props) {
   }
 
   return (
-    <div>
+    <Container>
       <div className="user">
-        <h3>{props.engineerUser.displayName}さん</h3>
-        <img width={200} height={200} src={props.engineerUser.photoURL}></img>
+        <Grid container spacing={3}>
+          <Grid item xs={3}>
+            <img
+              width={200}
+              height={200}
+              src={props.engineerUser.photoURL}
+              style={{
+                borderRadius: "50%",
+              }}
+            ></img>
+          </Grid>
+          <Grid item xs={9}>
+            <h2>{props.engineerUser.displayName}さん</h2>
+            <h3>GitHubアカウント: <a href={`https://github.com/${props.engineerUser.loginName}`}>{props.engineerUser.loginName}</a></h3>
+          </Grid>
+        </Grid>
       </div>
       <div className="ability">
-      { props.abilities.map((ability) => {
-        return (
-          <div key={ability.id}>
-            <h2>能力</h2>
-            <div>
-              <h3>発見力 {calcDetectabilityScore(ability)}</h3>
-              <p>{ability.issueScore}</p>
-            </div>
-            <div>
-              <h3>解決力 {calcSolvingScore(ability)}</h3>
-              <p>プロジェクトスコア {ability.projectScore}</p>
-              <p>リポジトリスコア {ability.repositoryScore}</p>
-              <p>コミットスコア {ability.commitScore}</p>
-              <p>プルリクエストスコア {ability.pullreqScore}</p>
-            </div>
-            <div>
-              <h3>スピード {calcSpeedScore(ability)}</h3>
-              <p>{ability.speedScore}</p>
-            </div>
-          </div>
-        );
-      })}
+        <h2>エンジニアスコア {
+          calcDetectabilityScore(props.abilities[0]) +
+          calcSolvingScore(props.abilities[0]) +
+          calcSpeedScore(props.abilities[0])
+        }</h2>
+        <Grid container spacing={2}>
+          <Grid item xs={3}>
+            <h3>発見力 {calcDetectabilityScore(props.abilities[0])}</h3>
+            <p>イシュースコア {props.abilities[0].issueScore}</p>
+          </Grid>
+          <Grid item xs={3}>
+            <h3>解決力 {calcSolvingScore(props.abilities[0])}</h3>
+            <p>プロジェクトスコア {props.abilities[0].projectScore}</p>
+            <p>リポジトリスコア {props.abilities[0].repositoryScore}</p>
+            <p>コミットスコア {props.abilities[0].commitScore}</p>
+          </Grid>
+          <Grid item xs={3}>
+            <h3>スピード {calcSpeedScore(props.abilities[0])}</h3>
+            <p>コミットスピードスコア {props.abilities[0].speedScore}</p>
+          </Grid>
+        </Grid>
       </div>
-    </div>
+    </Container>
   );
 }
