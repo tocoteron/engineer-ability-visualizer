@@ -10,9 +10,16 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/controller"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/firebase"
+	mymiddleware "github.com/tokoroten-lab/engineer-ability-visualizer/middleware"
 )
 
 func main() {
+	authClient, err := firebase.InitAuthClient("firebaseServiceAccountKey.json")
+	if err != nil {
+		panic(err)
+	}
+
 	databaseDatasource := os.Getenv("DATABASE_DATASOURCE")
 	fmt.Println("DB_SOURCE:", os.Getenv("DATABASE_DATASOURCE"))
 
@@ -49,8 +56,10 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
+	auth := mymiddleware.NewAuth(authClient, db)
+
 	// Routes
-	e.GET("/", hello)
+	e.GET("/", hello, auth.FirebaseAuthMiddleware)
 
 	e.GET("/user/engineer", engineerUserController.GetAll)
 	e.GET("/user/engineer/:id", engineerUserController.Get)
