@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
   speedScore: {
     color: speedScoreColor,
+  },
+  sectionContainer: {
+    marginBottom: theme.spacing(3),
   }
 }));
 
@@ -74,7 +77,7 @@ export default function EngineerUserAbility(props: Props) {
           </Grid>
         </Grid>
       </div>
-      <div className="ability">
+      <div className={classes.sectionContainer}>
         <h2 className={classes.engineerScore}>エンジニアスコア {calcEngineerScore(abilities[0])}</h2>
         <Grid container spacing={2}>
           <Grid item xs={3}>
