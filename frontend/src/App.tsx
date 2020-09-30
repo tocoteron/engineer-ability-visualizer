@@ -24,6 +24,7 @@ import ListItemLink from './components/ListItemLink';
 import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
 import RegisterHRUserPage from './pages/RegisterHRUserPage';
 import LoginHRUserPage from './pages/LoginHRUserPage';
+import EngineerUserListPage from './pages/EngineerUserListPage';
 
 const drawerWidth = 240;
 
@@ -109,13 +110,16 @@ function App() {
         </Drawer>
         <div className={classes.content}>
           <Switch>
-            <Route path="/engineers/:engineerUserId">
+            <Route exact path="/engineers">
+              <EngineerUserListPage />
+            </Route>
+            <Route exact path="/engineers/:engineerUserId">
               <EngineerUserAbilityPage />
             </Route>
-            <Route path="/register">
+            <Route exact path="/register">
               <RegisterHRUserPage successCallbackPath="/" />
             </Route>
-            <Route path="/login">
+            <Route exact path="/login">
               <LoginHRUserPage successCallbackPath="/" />
             </Route>
           </Switch>

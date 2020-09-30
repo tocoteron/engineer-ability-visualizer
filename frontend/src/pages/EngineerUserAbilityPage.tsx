@@ -4,12 +4,7 @@ import EngineerUser from '../models/EngineerUser';
 import EngineerUserAbilityReport from '../models/EngineerUserAbilityReport';
 import EngineerUserAbility from '../components/EngineerUserAbility';
 import API from '../api';
-
-function getRandomInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-}
+import mock from '../mock';
 
 export default function EngineerUserAbilityPage() {
   const { engineerUserId } = useParams<{engineerUserId: string}>();
@@ -33,12 +28,12 @@ export default function EngineerUserAbilityPage() {
       return {
         id: i,
         engineerUserId: Number(engineerUserId),
-        projectScore: getRandomInt(0, 1000),
-        repositoryScore: getRandomInt(0, 1000),
-        commitScore: getRandomInt(0, 1000),
-        pullreqScore: getRandomInt(0, 1000),
-        issueScore: getRandomInt(0, 1000),
-        speedScore: getRandomInt(0, 1000),
+        projectScore: mock.getRandomInt(0, 1000),
+        repositoryScore: mock.getRandomInt(0, 1000),
+        commitScore: mock.getRandomInt(0, 1000),
+        pullreqScore: mock.getRandomInt(0, 1000),
+        issueScore: mock.getRandomInt(0, 1000),
+        speedScore: mock.getRandomInt(0, 1000),
         createdAt,
       }
     });
