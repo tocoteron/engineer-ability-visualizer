@@ -3,6 +3,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  withRouter,
+  RouteComponentProps
 } from "react-router-dom";
 import useUser from './hooks/useUser';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,14 +12,10 @@ import {
   Divider,
   Drawer,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText
 } from '@material-ui/core';
 import {
   PersonAdd as PersonAddIcon,
   VpnKey as VpnKeyIcon,
-  ExitToApp as ExitToAppIcon,
   People as PeopleIcon,
 } from '@material-ui/icons';
 import ListItemLink from './components/ListItemLink';
@@ -25,6 +23,7 @@ import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
 import RegisterHRUserPage from './pages/RegisterHRUserPage';
 import LoginHRUserPage from './pages/LoginHRUserPage';
 import EngineerUserListPage from './pages/EngineerUserListPage';
+import LogoutListItem from './components/LogoutListItem';
 
 const drawerWidth = 240;
 
@@ -80,20 +79,7 @@ function App() {
                 />
               </>
             )}
-            { user && (
-              <ListItem
-                button
-                key={"logout"}
-                onClick={async () => {
-                  await logout()
-                }}
-              >
-                <ListItemIcon>
-                  <ExitToAppIcon />
-                </ListItemIcon>
-                <ListItemText primary={"ログアウト"} />
-              </ListItem>
-            )}
+            { user && <LogoutListItem />}
           </List>
           <Divider />
           { user && (
@@ -118,10 +104,10 @@ function App() {
               <EngineerUserAbilityPage />
             </Route>
             <Route exact path="/register">
-              <RegisterHRUserPage successCallbackPath="/" />
+              <RegisterHRUserPage successCallbackPath="/engineers" />
             </Route>
             <Route exact path="/login">
-              <LoginHRUserPage successCallbackPath="/" />
+              <LoginHRUserPage successCallbackPath="/engineers" />
             </Route>
           </Switch>
         </div>
