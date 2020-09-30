@@ -9,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 )
 
 const (
@@ -34,7 +35,24 @@ func (auth *Auth) FirebaseAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc
 			return err
 		}
 
-		log.Println("Bearer", idToken)
+		token, err := auth.client.VerifyIDToken(c.Request().Context(), idToken)
+		if err != nil {
+			return err
+		}
+
+		userRecord, err := auth.client.GetUser(c.Request().Context(), token.UID)
+		if err != nil {
+			return err
+		}
+
+		firebaseUser := toFirebaseUser(userRecord)
+		log.Println(firebaseUser)
+
+		_, err = repository.SyncHRUser(auth.db, &firebaseUser)
+		if err != nil {
+			return err
+		}
+		log.Println("Complete sync hr_users")
 
 		return next(c)
 	}

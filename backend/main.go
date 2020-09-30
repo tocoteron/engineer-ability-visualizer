@@ -73,5 +73,13 @@ func main() {
 
 // Handler
 func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+	type Response struct {
+		Message string
+	}
+
+	res := &Response{
+		Message: "Hello, World!",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

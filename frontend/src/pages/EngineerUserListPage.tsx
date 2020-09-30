@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, Divider, Grid, makeStyles, TextField } from '@material-ui/core';
 import mock from '../mock';
 import EngineerUser from '../models/EngineerUser';
 import { Link } from 'react-router-dom';
-
+import useUser from '../hooks/useUser';
+import api from '../api';
 
 const range = Array(10).fill(0).map((v, i) => i + 1);
 const mockEngineerUsers: EngineerUser[] = range.map<EngineerUser>((i) => {
@@ -70,6 +71,7 @@ function EngineerUserCard(props: {engineerUser: EngineerUser}) {
 
 export default function EngineerUserListPage() {
   const classes = useStyles();
+  const { user } = useUser();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [engineerUsers, setEngineerUsers] = useState<EngineerUser[]>(mockEngineerUsers);
   const [githubURL, setGithubURL] = useState<string>("");
@@ -98,6 +100,19 @@ export default function EngineerUserListPage() {
     setEngineerUsers([engineerUser, ...engineerUsers]);
     setErrorMessage("");
   }
+
+  useEffect(() => {
+    const f = async () => {
+      if (user === null) {
+        return;
+      }
+
+      const token = await user.getIdToken()
+      await api.testHRUser(token);
+    };
+
+    f();
+  }, [user])
 
   return (
     <Container>
