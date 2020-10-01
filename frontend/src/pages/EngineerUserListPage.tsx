@@ -10,7 +10,12 @@ import EngineerUserAbilityReport, {
   calcEngineerScore,
   calcDetectabilityScore,
   calcSolvingScore,
-  calcSpeedScore
+  calcSpeedScore,
+  getEngineerAbilityReport,
+  compareByEngineerScore,
+  compareByDetectabilityScore,
+  compareBySolvingScore,
+  compareBySpeedScore
 } from '../models/EngineerUserAbilityReport';
 import { Link } from 'react-router-dom';
 import useUser from '../hooks/useUser';
@@ -57,36 +62,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   }
 }));
-
-function getEngineerAbilityReport(engineerUser: EngineerUser) {
-  if (hasScore(engineerUser)) {
-    const ability: EngineerUserAbilityReport = {
-      id: 0,
-      engineerUserId: engineerUser.id,
-      projectScore: engineerUser.projectScore!,
-      repositoryScore: engineerUser.repositoryScore!,
-      commitScore: engineerUser.commitScore!,
-      pullreqScore: engineerUser.pullreqScore!,
-      issueScore: engineerUser.issueScore!,
-      speedScore: engineerUser.speedScore!,
-      createdAt: new Date(),
-    };
-    return ability;
-  } else {
-    const ability: EngineerUserAbilityReport = {
-      id: 0,
-      engineerUserId: engineerUser.id,
-      projectScore: 0,
-      repositoryScore: 0,
-      commitScore: 0,
-      pullreqScore: 0,
-      issueScore: 0,
-      speedScore: 0,
-      createdAt: new Date(),
-    };
-    return ability;
-  }
-}
 
 function EngineerUserCard(props: {engineerUser: EngineerUser}) {
   const classes = useStyles();
@@ -167,31 +142,7 @@ export default function EngineerUserListPage() {
     setGithubURL(e.target.value);
   }
 
-  function compareByEngineerScore(a: EngineerUser, b: EngineerUser) {
-    const aa = getEngineerAbilityReport(a);
-    const ba = getEngineerAbilityReport(b);
-    return calcEngineerScore(ba) - calcEngineerScore(aa);
-  }
-
-  function compareByDetectabilityScore(a: EngineerUser, b: EngineerUser) {
-    const aa = getEngineerAbilityReport(a);
-    const ba = getEngineerAbilityReport(b);
-    return calcDetectabilityScore(ba) - calcDetectabilityScore(aa);
-  }
-
-  function compareBySolvingScore(a: EngineerUser, b: EngineerUser) {
-    const aa = getEngineerAbilityReport(a);
-    const ba = getEngineerAbilityReport(b);
-    return calcSolvingScore(ba) - calcSolvingScore(aa);
-  }
-
-  function compareBySpeedScore(a: EngineerUser, b: EngineerUser) {
-    const aa = getEngineerAbilityReport(a);
-    const ba = getEngineerAbilityReport(b);
-    return calcSpeedScore(ba) - calcSpeedScore(aa);
-  }
-
-  function onChangeSortAxis(e: React.ChangeEvent<{ value: unknown }>) {
+    function onChangeSortAxis(e: React.ChangeEvent<{ value: unknown }>) {
     setSortAxis(e.target.value as string);
 
     const axis = Number(e.target.value);
