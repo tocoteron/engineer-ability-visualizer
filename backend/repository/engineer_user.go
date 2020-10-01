@@ -28,9 +28,9 @@ UPDATE login_name = ?, display_name = ?, photo_url = ?
 }
 
 func GetEngineerUser(db *sqlx.DB, id uint64) (*model.EngineerUser, error) {
-	engineerUser := &model.EngineerUser{}
+	var engineerUser model.EngineerUser
 
-	if err := db.Get(engineerUser, `
+	if err := db.Get(&engineerUser, `
 SELECT id, login_name, display_name, photo_url
 FROM engineer_users
 WHERE id = ? LIMIT 1
@@ -38,7 +38,7 @@ WHERE id = ? LIMIT 1
 		return nil, err
 	}
 
-	return engineerUser, nil
+	return &engineerUser, nil
 }
 
 func GetEngineerUserFromLoginName(db *sqlx.DB, loginName string) (*model.EngineerUser, error) {

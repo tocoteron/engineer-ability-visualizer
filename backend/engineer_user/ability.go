@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/google/go-github/v32/github"
+	"github.com/jmoiron/sqlx"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
+	"github.com/tokoroten-lab/engineer-ability-visualizer/repository"
 	"golang.org/x/oauth2"
 )
 
-func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityReport, error) {
-	/*
-		engineerUser, err := repository.GetEngineerUser(nil, engineerUserID)
-		if err != nil {
-			return nil, err
-		}
-	*/
+func CalcEngineerUserAbility(db *sqlx.DB, engineerUserID uint64) (*model.EngineerUserAbilityReport, error) {
+	engineerUser, err := repository.GetEngineerUser(db, engineerUserID)
+	if err != nil {
+		return nil, err
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -27,7 +27,7 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityR
 
 	githubClient := github.NewClient(tc)
 
-	githubUser, err := getAuthenticatedUser(ctx, githubClient)
+	githubUser, err := getGitHubUser(ctx, githubClient, engineerUser.LoginName)
 	if err != nil {
 		return nil, err
 	}
@@ -41,31 +41,37 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityR
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("ProjectScore", projectScore)
 
 	repositoryScore, err := calcRepositoryScore(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("RepositoryScore", repositoryScore)
 
 	commitScore, err := calcCommitScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("CommitScore", commitScore)
 
 	pullreqScore, err := calcPullreqScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("PullreqScore", pullreqScore)
 
 	issueScore, err := calcIssueScore(githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("IssueScore", issueScore)
 
 	speedScore, err := calcSpeedScore(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("SpeedScore", speedScore)
 
 	ability := &model.EngineerUserAbilityReport{
 		ID:              0,
@@ -82,8 +88,8 @@ func CalcEngineerUserAbility(engineerUserID uint64) (*model.EngineerUserAbilityR
 	return ability, nil
 }
 
-func getAuthenticatedUser(ctx context.Context, githubClient *github.Client) (*github.User, error) {
-	user, _, err := githubClient.Users.Get(ctx, "")
+func getGitHubUser(ctx context.Context, githubClient *github.Client, loginName string) (*github.User, error) {
+	user, _, err := githubClient.Users.Get(ctx, loginName)
 	if err != nil {
 		return nil, err
 	}
@@ -106,11 +112,11 @@ func getAuthenticatedUserEvents(ctx context.Context, client *github.Client, user
 		events, _, err := client.Activity.ListEventsPerformedByUser(
 			ctx,
 			user.GetLogin(),
-			false,
+			true,
 			listOptions,
 		)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("UNKO", err)
 			return nil, err
 		}
 
@@ -130,7 +136,7 @@ func calcProjectScore(ctx context.Context, client *github.Client, user *github.U
 }
 
 func calcRepositoryScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
-	repositories, _, err := client.Repositories.List(ctx, "", nil)
+	repositories, _, err := client.Repositories.List(ctx, user.GetLogin(), nil)
 	if err != nil {
 		return 0, err
 	}
@@ -176,7 +182,7 @@ func calcIssueScore(events []*github.Event) (uint64, error) {
 }
 
 func calcSpeedScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
-	repositories, _, err := client.Repositories.List(ctx, "", nil)
+	repositories, _, err := client.Repositories.List(ctx, user.GetLogin(), nil)
 	if err != nil {
 		return 0, err
 	}
@@ -195,9 +201,10 @@ func calcSpeedScore(ctx context.Context, client *github.Client, user *github.Use
 			options,
 		)
 		if err != nil {
+			fmt.Println(resp.StatusCode)
 			// 409 means "Git Repository is empty"
 			if resp.StatusCode != 409 {
-				return 0, err
+				continue
 			}
 		}
 

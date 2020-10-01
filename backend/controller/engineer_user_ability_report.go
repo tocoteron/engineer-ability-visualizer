@@ -27,7 +27,7 @@ func (a *EngineerUserAbilityReport) Create(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
 	}
 
-	mockData, err := engineer_user.CalcEngineerUserAbility(id)
+	mockData, err := engineer_user.CalcEngineerUserAbility(a.db, id)
 	if err != nil {
 		log.Println(err)
 		return c.String(http.StatusInternalServerError, "Calc engineer ability has failed")
