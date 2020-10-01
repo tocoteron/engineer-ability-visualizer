@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
@@ -42,7 +44,13 @@ func main() {
 		abort <- struct{}{}
 	}()
 
-	ticker := time.NewTicker(3 * time.Second)
+	tickDurationEnv := os.Getenv("BATCH_TICK_DURATION")
+	tickDuration, err := strconv.ParseUint(tickDurationEnv, 10, 64)
+	if err != nil {
+		panic(errors.New("Invalid tick duration"))
+	}
+
+	ticker := time.NewTicker(time.Duration(tickDuration) * time.Second)
 	for {
 		select {
 		case <-ticker.C:

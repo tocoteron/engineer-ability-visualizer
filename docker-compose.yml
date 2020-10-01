@@ -29,6 +29,7 @@ services:
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - DATABASE_DATASOURCE=${DATABASE_DATASOURCE}
+      - BATCH_TICK_DURATION=${BATCH_TICK_DURATION}
     volumes:
       - ./batch:/app
     tty: true # Alive daemon
