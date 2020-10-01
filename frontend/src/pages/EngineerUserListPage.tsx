@@ -4,7 +4,6 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
 import SpeedIcon from '@material-ui/icons/Speed';
-import mock from '../mock';
 import EngineerUser, { hasScore } from '../models/EngineerUser';
 import EngineerUserAbilityReport, {
   calcEngineerScore,
@@ -15,22 +14,11 @@ import EngineerUserAbilityReport, {
   compareByEngineerScore,
   compareByDetectabilityScore,
   compareBySolvingScore,
-  compareBySpeedScore
+  compareBySpeedScore, getRankByEngineerScore, getRankByDetectablityScore, getRankBySolvingScore, getRankBySpeedScore
 } from '../models/EngineerUserAbilityReport';
 import { Link } from 'react-router-dom';
 import useUser from '../hooks/useUser';
 import api from '../api';
-
-const range = Array(10).fill(0).map((v, i) => i + 1);
-const mockEngineerUsers: EngineerUser[] = range.map<EngineerUser>((i) => {
-  const id = mock.getRandomInt(0, 1000);
-  return {
-    id,
-    loginName: `github-user-${id}`,
-    displayName: `エンジニア${id}号`,
-    photoURL: "https://avatars3.githubusercontent.com/u/51188956?v=4",
-  }
-});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,8 +51,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function EngineerUserCard(props: {engineerUser: EngineerUser}) {
+function EngineerUserCard(props: {engineerUsers: EngineerUser[], engineerUser: EngineerUser}) {
   const classes = useStyles();
+  const engineerUsers = props.engineerUsers;
   const engineerUser = props.engineerUser;
   const ability = getEngineerAbilityReport(engineerUser);
 
@@ -106,19 +95,19 @@ function EngineerUserCard(props: {engineerUser: EngineerUser}) {
             <div className={classes.scoreContaier}>
               <div className={classes.engineerScore}>
                 <AccountCircleIcon></AccountCircleIcon>
-                <p>{calcEngineerScore(ability)}</p>
+                <p>{calcEngineerScore(ability)} ({getRankByEngineerScore(engineerUsers, engineerUser)}位)</p>
               </div>
               <div className={classes.score}>
                 <SearchIcon></SearchIcon>
-                <p>{calcDetectabilityScore(ability)}</p>
+                <p>{calcDetectabilityScore(ability)} ({getRankByDetectablityScore(engineerUsers, engineerUser)}位)</p>
               </div>
               <div className={classes.score}>
                 <DoneOutlineIcon></DoneOutlineIcon>
-                <p>{calcSolvingScore(ability)}</p>
+                <p>{calcSolvingScore(ability)} ({getRankBySolvingScore(engineerUsers, engineerUser)}位)</p>
               </div>
               <div className={classes.score}>
                 <SpeedIcon></SpeedIcon>
-                <p>{calcSpeedScore(ability)}</p>
+                <p>{calcSpeedScore(ability)} ({getRankBySpeedScore(engineerUsers, engineerUser)}位)</p>
               </div>
             </div>
           }
@@ -259,6 +248,7 @@ export default function EngineerUserListPage() {
           engineerUsers.map((engineerUser) => (
             <EngineerUserCard
               key={engineerUser.id}
+              engineerUsers={engineerUsers}
               engineerUser={engineerUser}
             />
           ))

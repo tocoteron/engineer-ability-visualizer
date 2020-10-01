@@ -86,3 +86,43 @@ export function compareBySpeedScore(a: EngineerUser, b: EngineerUser) {
   const ba = getEngineerAbilityReport(b);
   return calcSpeedScore(ba) - calcSpeedScore(aa);
 }
+
+export function getRankByEngineerScore(engineerUsers: EngineerUser[], engineerUser: EngineerUser) {
+  if (!engineerUsers.includes(engineerUser)) {
+    throw "User is not included in list";
+  }
+
+  const sorted = engineerUsers.slice().sort(compareByEngineerScore);
+
+  return sorted.indexOf(engineerUser) + 1;
+}
+
+export function getRankByDetectablityScore(engineerUsers: EngineerUser[], engineerUser: EngineerUser) {
+  if (!engineerUsers.includes(engineerUser)) {
+    throw "User is not included in list";
+  }
+
+  const sorted = engineerUsers.slice().sort(compareByDetectabilityScore);
+
+  return sorted.indexOf(engineerUser) + 1;
+}
+
+export function getRankBySolvingScore(engineerUsers: EngineerUser[], engineerUser: EngineerUser) {
+  if (!engineerUsers.includes(engineerUser)) {
+    throw "User is not included in list";
+  }
+
+  const sorted = engineerUsers.slice().sort(compareBySolvingScore);
+
+  return sorted.indexOf(engineerUser) + 1;
+}
+
+export function getRankBySpeedScore(engineerUsers: EngineerUser[], engineerUser: EngineerUser) {
+  if (!engineerUsers.includes(engineerUser)) {
+    throw "User is not included in list";
+  }
+
+  const sorted = engineerUsers.slice().sort(compareBySpeedScore);
+
+  return sorted.indexOf(engineerUser) + 1;
+}
