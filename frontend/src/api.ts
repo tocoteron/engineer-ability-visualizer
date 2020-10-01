@@ -22,6 +22,16 @@ async function testHRUser(idToken: string) {
     return await toJson(res);
 };
 
+async function getEngineerList(idToken: string) {
+    const res = await fetch(`${API_BASE_URL}/hr_user/engineers`, {
+        headers: new Headers({
+            Authorization: `Bearer ${idToken}`
+        }),
+    })
+
+    return await toJson(res);
+}
+
 async function addEngineerToList(idToken: string, githubLoginName: string) {
     const res = await fetch(`${API_BASE_URL}/hr_user/engineers/${githubLoginName}`, {
         method: "POST",
@@ -49,6 +59,7 @@ async function getEngineerUser(engineerUserId: number) {
 
 export default {
     testHRUser,
+    getEngineerList,
     addEngineerToList,
     getEngineerUserAbilityReports,
     getEngineerUser,

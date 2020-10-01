@@ -73,7 +73,7 @@ export default function EngineerUserListPage() {
   const classes = useStyles();
   const { user } = useUser();
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [engineerUsers, setEngineerUsers] = useState<EngineerUser[]>(mockEngineerUsers);
+  const [engineerUsers, setEngineerUsers] = useState<EngineerUser[]>([]);
   const [githubURL, setGithubURL] = useState<string>("");
 
   function onChangeGithubURL(e: FormChangeEvent) {
@@ -123,6 +123,9 @@ export default function EngineerUserListPage() {
 
       const token = await user.getIdToken()
       await api.testHRUser(token);
+
+      const engineerUsers: EngineerUser[] = await api.getEngineerList(token);
+      setEngineerUsers(engineerUsers);
     };
 
     f();
