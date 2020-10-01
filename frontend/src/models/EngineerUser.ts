@@ -12,11 +12,11 @@ export default interface EngineerUser {
 }
 
 export function hasScore(engineerUser: EngineerUser) {
-	return engineerUser.projectScore
-    && engineerUser.repositoryScore
-    && engineerUser.commitScore
-    && engineerUser.pullreqScore
-    && engineerUser.issueScore
-    && engineerUser.repositoryScore
-    && engineerUser.speedScore
+	return typeof(engineerUser.projectScore) === "number"
+    && typeof(engineerUser.repositoryScore) === "number"
+    && typeof(engineerUser.commitScore) === "number"
+    && typeof(engineerUser.pullreqScore) === "number"
+    && typeof(engineerUser.issueScore) === "number"
+    && typeof(engineerUser.repositoryScore) === "number"
+    && typeof(engineerUser.speedScore) === "number"
 }

@@ -64,11 +64,11 @@ function EngineerUserCard(props: {engineerUser: EngineerUser}) {
     id: 0,
     engineerUserId: engineerUser.id,
     projectScore: engineerUser.projectScore!,
-    repositoryScore: engineerUser.projectScore!,
-    commitScore: engineerUser.projectScore!,
-    pullreqScore: engineerUser.projectScore!,
-    issueScore: engineerUser.projectScore!,
-    speedScore: engineerUser.projectScore!,
+    repositoryScore: engineerUser.repositoryScore!,
+    commitScore: engineerUser.commitScore!,
+    pullreqScore: engineerUser.pullreqScore!,
+    issueScore: engineerUser.issueScore!,
+    speedScore: engineerUser.speedScore!,
     createdAt: new Date(),
   };
 
