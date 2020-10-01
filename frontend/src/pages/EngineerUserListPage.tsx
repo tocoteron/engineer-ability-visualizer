@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Divider, Grid, makeStyles, TextField } from '@material-ui/core';
+import { Button, Container, Divider, FormControl, Grid, InputLabel, makeStyles, Select, TextField } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
@@ -52,28 +52,50 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: 'center',
     marginRight: theme.spacing(2),
+  },
+  formControl: {
+    marginBottom: theme.spacing(3),
   }
 }));
 
-type FormChangeEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
+function getEngineerAbilityReport(engineerUser: EngineerUser) {
+  if (hasScore(engineerUser)) {
+    const ability: EngineerUserAbilityReport = {
+      id: 0,
+      engineerUserId: engineerUser.id,
+      projectScore: engineerUser.projectScore!,
+      repositoryScore: engineerUser.repositoryScore!,
+      commitScore: engineerUser.commitScore!,
+      pullreqScore: engineerUser.pullreqScore!,
+      issueScore: engineerUser.issueScore!,
+      speedScore: engineerUser.speedScore!,
+      createdAt: new Date(),
+    };
+    return ability;
+  } else {
+    const ability: EngineerUserAbilityReport = {
+      id: 0,
+      engineerUserId: engineerUser.id,
+      projectScore: 0,
+      repositoryScore: 0,
+      commitScore: 0,
+      pullreqScore: 0,
+      issueScore: 0,
+      speedScore: 0,
+      createdAt: new Date(),
+    };
+    return ability;
+  }
+}
 
 function EngineerUserCard(props: {engineerUser: EngineerUser}) {
   const classes = useStyles();
   const engineerUser = props.engineerUser;
-  const ability: EngineerUserAbilityReport = {
-    id: 0,
-    engineerUserId: engineerUser.id,
-    projectScore: engineerUser.projectScore!,
-    repositoryScore: engineerUser.repositoryScore!,
-    commitScore: engineerUser.commitScore!,
-    pullreqScore: engineerUser.pullreqScore!,
-    issueScore: engineerUser.issueScore!,
-    speedScore: engineerUser.speedScore!,
-    createdAt: new Date(),
-  };
+  const ability = getEngineerAbilityReport(engineerUser);
 
   return (
     <div className="engineer">
+      <Divider></Divider>
       <Grid container spacing={3}>
         <Grid item xs={2}>
           <img
@@ -127,10 +149,11 @@ function EngineerUserCard(props: {engineerUser: EngineerUser}) {
           }
         </Grid>
       </Grid>
-      <Divider></Divider>
     </div>
   );
 }
+
+type FormChangeEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
 
 export default function EngineerUserListPage() {
   const classes = useStyles();
@@ -138,9 +161,63 @@ export default function EngineerUserListPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [engineerUsers, setEngineerUsers] = useState<EngineerUser[]>([]);
   const [githubURL, setGithubURL] = useState<string>("");
+  const [sortAxis, setSortAxis] = useState<string>("");
 
   function onChangeGithubURL(e: FormChangeEvent) {
     setGithubURL(e.target.value);
+  }
+
+  function compareByEngineerScore(a: EngineerUser, b: EngineerUser) {
+    const aa = getEngineerAbilityReport(a);
+    const ba = getEngineerAbilityReport(b);
+    return calcEngineerScore(ba) - calcEngineerScore(aa);
+  }
+
+  function compareByDetectabilityScore(a: EngineerUser, b: EngineerUser) {
+    const aa = getEngineerAbilityReport(a);
+    const ba = getEngineerAbilityReport(b);
+    return calcDetectabilityScore(ba) - calcDetectabilityScore(aa);
+  }
+
+  function compareBySolvingScore(a: EngineerUser, b: EngineerUser) {
+    const aa = getEngineerAbilityReport(a);
+    const ba = getEngineerAbilityReport(b);
+    return calcSolvingScore(ba) - calcSolvingScore(aa);
+  }
+
+  function compareBySpeedScore(a: EngineerUser, b: EngineerUser) {
+    const aa = getEngineerAbilityReport(a);
+    const ba = getEngineerAbilityReport(b);
+    return calcSpeedScore(ba) - calcSpeedScore(aa);
+  }
+
+  function onChangeSortAxis(e: React.ChangeEvent<{ value: unknown }>) {
+    setSortAxis(e.target.value as string);
+
+    const axis = Number(e.target.value);
+
+    switch(axis) {
+      case 1:
+        setEngineerUsers(
+          engineerUsers.slice().sort(compareByEngineerScore)
+        );
+        break;
+      case 2:
+        setEngineerUsers(
+          engineerUsers.slice().sort(compareByDetectabilityScore)
+        );
+        break;
+      case 3:
+        setEngineerUsers(
+          engineerUsers.slice().sort(compareBySolvingScore)
+        );
+        break;
+      case 4:
+        setEngineerUsers(
+          engineerUsers.slice().sort(compareBySpeedScore)
+        );
+        break;
+    }
   }
 
   async function addEngineerUser() {
@@ -165,17 +242,6 @@ export default function EngineerUserListPage() {
     } catch(err) {
       console.error(err);
     }
-
-    /*
-    const engineerUserId = mock.getRandomInt(0, 1000);
-    const engineerUser: EngineerUser = {
-      id: engineerUserId,
-      loginName: engineerUserLoginName,
-      displayName: `${engineerUserLoginName}`,
-      photoURL: "https://avatars3.githubusercontent.com/u/51188956?v=4",
-    };
-    */
-
   }
 
   useEffect(() => {
@@ -218,6 +284,25 @@ export default function EngineerUserListPage() {
           </Button>
         </Grid>
       </Grid>
+      <FormControl variant="outlined" className={classes.formControl}> 
+        <InputLabel htmlFor="outlined-age-native-simple">Sort</InputLabel>
+        <Select
+          native
+          value={sortAxis}
+          onChange={onChangeSortAxis}
+          label="sort"
+          inputProps={{
+            name: 'sort',
+            id: 'outlined-age-native-simple',
+          }}
+        >
+          <option aria-label="None" value={0} />
+          <option value={1}>エンジニアスコア</option>
+          <option value={2}>発見力</option>
+          <option value={3}>解決力</option>
+          <option value={4}>スピード</option>
+        </Select>
+      </FormControl>
       <div className="engineers">
         {
           engineerUsers.map((engineerUser) => (
