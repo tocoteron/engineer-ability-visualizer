@@ -48,7 +48,7 @@ export default function EngineerUserAbilityPage() {
     const f = async () => {
       try {
         const engineerUser = await API.getEngineerUser(Number(engineerUserId));
-        console.log(engineerUser);
+        console.log("engineerUser", engineerUser);
 
         let abilityReports = await API.getEngineerUserAbilityReports(Number(engineerUserId));
         abilityReports = abilityReports.map((abilityReport) => ({
@@ -57,7 +57,7 @@ export default function EngineerUserAbilityPage() {
             ? new Date(abilityReport.createdAt)
             : abilityReport.createdAt,
         }));
-        console.log(abilityReports);
+        console.log("abilityReports", abilityReports);
 
         setEngineerUser(engineerUser);
         setAbilityReports(abilityReports);

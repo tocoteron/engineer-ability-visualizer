@@ -47,11 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const {user, logout} = useUser();
-
-  useEffect(() => {
-    console.log(user)
-  }, [user])
+  const { user } = useUser();
 
   return (
     <div className="App">
