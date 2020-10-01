@@ -141,7 +141,7 @@ func calcEngineerUserAbility(db *sqlx.DB, engineerUser *model.EngineerUser) (*mo
 		return nil, err
 	}
 
-	githubUserEvents, err := getAuthenticatedUserEvents(ctx, githubClient, githubUser)
+	githubUserEvents, err := geGitHubUserEvents(ctx, githubClient, githubUser)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func getGitHubUser(ctx context.Context, githubClient *github.Client, loginName s
 	return user, nil
 }
 
-func getAuthenticatedUserEvents(ctx context.Context, client *github.Client, user *github.User) ([]*github.Event, error) {
+func geGitHubUserEvents(ctx context.Context, client *github.Client, user *github.User) ([]*github.Event, error) {
 	perPage := 100
 	maxPageCount := 2
 
@@ -216,15 +216,19 @@ func getAuthenticatedUserEvents(ctx context.Context, client *github.Client, user
 			Page:    page,
 		}
 
-		events, _, err := client.Activity.ListEventsPerformedByUser(
+		events, resp, err := client.Activity.ListEventsPerformedByUser(
 			ctx,
 			user.GetLogin(),
 			true,
 			listOptions,
 		)
 		if err != nil {
-			fmt.Println("UNKO", err)
 			return nil, err
+		}
+
+		// All read
+		if resp.NextPage == 0 {
+			break
 		}
 
 		res = append(res, events...)
