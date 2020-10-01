@@ -1,12 +1,17 @@
 import { Container, Divider, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import EngineerUser from '../models/EngineerUser';
-import EngineerUserAbilityType from '../models/EngineerUserAbilityReport'
+import EngineerUserAbilityReport, {
+  calcEngineerScore,
+  calcDetectabilityScore,
+  calcSolvingScore,
+  calcSpeedScore
+} from '../models/EngineerUserAbilityReport'
 import {CartesianGrid, Line, LineChart, XAxis, Tooltip, ResponsiveContainer} from 'recharts';
 
 interface Props {
   engineerUser: EngineerUser;
-  abilities: EngineerUserAbilityType[];
+  abilities: EngineerUserAbilityReport[];
 }
 
 const engineerScoreColor = "#333";
@@ -35,27 +40,6 @@ const useStyles = makeStyles((theme) => ({
 export default function EngineerUserAbility(props: Props) {
   const classes = useStyles();
   const { engineerUser, abilities } = props;
-
-  function calcEngineerScore(ability: EngineerUserAbilityType) {
-    return calcDetectabilityScore(ability)
-      + calcSolvingScore(ability)
-      + calcSpeedScore(ability);
-  }
-
-  function calcDetectabilityScore(ability: EngineerUserAbilityType) {
-    return ability.issueScore;
-  }
-
-  function calcSolvingScore(ability: EngineerUserAbilityType) {
-    return ability.projectScore
-      + ability.repositoryScore
-      + ability.commitScore
-      + ability.pullreqScore;
-  }
-
-  function calcSpeedScore(ability: EngineerUserAbilityType) {
-    return ability.speedScore;
-  }
 
   return (
     <Container>

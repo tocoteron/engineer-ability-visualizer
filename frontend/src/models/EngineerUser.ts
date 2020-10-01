@@ -10,3 +10,13 @@ export default interface EngineerUser {
 	issueScore?: number | null
 	speedScore?: number | null
 }
+
+export function hasScore(engineerUser: EngineerUser) {
+	return engineerUser.projectScore
+    && engineerUser.repositoryScore
+    && engineerUser.commitScore
+    && engineerUser.pullreqScore
+    && engineerUser.issueScore
+    && engineerUser.repositoryScore
+    && engineerUser.speedScore
+}

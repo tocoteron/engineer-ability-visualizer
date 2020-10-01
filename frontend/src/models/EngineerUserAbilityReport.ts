@@ -9,3 +9,24 @@ export default interface EngineerUserAbilityReport {
   speedScore: number;
   createdAt: Date;
 }
+
+export function calcEngineerScore(ability: EngineerUserAbilityReport) {
+  return calcDetectabilityScore(ability)
+    + calcSolvingScore(ability)
+    + calcSpeedScore(ability);
+}
+
+export function calcDetectabilityScore(ability: EngineerUserAbilityReport) {
+  return ability.issueScore;
+}
+
+export function calcSolvingScore(ability: EngineerUserAbilityReport) {
+  return ability.projectScore
+    + ability.repositoryScore
+    + ability.commitScore
+    + ability.pullreqScore;
+}
+
+export function calcSpeedScore(ability: EngineerUserAbilityReport) {
+  return ability.speedScore;
+}
