@@ -49,7 +49,7 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
   tooltip: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
-    maxWidth: "80%",
+    maxWidth: "90vw",
     fontSize: theme.typography.pxToRem(12),
     border: '1px solid #dadde9',
   },
@@ -71,7 +71,18 @@ const detectabilityScoreToolTip = (
       課題を発見することができるかといった指標です。
     </Typography>
     <Typography>
-      GitHubのイシューをどれだけ作成したかといった情報から計算されます。
+      GitHubのイシューから計算されます。
+    </Typography>
+    <br></br>
+    <Typography>
+      発見力 = イシュースコア
+    </Typography>
+    <br></br>
+    <Typography>
+      イシュースコア = イシューを作成したリポジトリの価値 + 1 の合計
+    </Typography>
+    <Typography>
+      リポジトリの価値 = スター数 + フォーク数
     </Typography>
   </React.Fragment>
 );
@@ -83,7 +94,24 @@ const solvingScoreToolTip = (
       課題にどれだけ取り組むことができるかといった指標です。
     </Typography>
     <Typography>
-      GitHubのプロジェクトの数/リポジトリ数/コミット数から計算されます。
+      GitHubのリポジトリ/コミット/プルリクから計算されます。
+    </Typography>
+    <br></br>
+    <Typography>
+      解決力 = リポジトリスコア + コミットスコア + プルリクスコア
+    </Typography>
+    <br></br>
+    <Typography>
+      リポジトリスコア = 作成したリポジトリの価値 の合計
+    </Typography>
+    <Typography>
+      コミットスコア = コミットしたリポジトリの価値 の合計
+    </Typography>
+    <Typography>
+      プルリクスコア = プルリクを出したリポジトリの価値 の合計
+    </Typography>
+    <Typography>
+      リポジトリの価値 = スター数 + フォーク数
     </Typography>
   </React.Fragment>
 );
@@ -96,6 +124,17 @@ const speedScoreToolTip = (
     </Typography>
     <Typography>
       GitHubの各リポジトリにおける時間あたりのコミット数から計算されます。
+    </Typography>
+    <br></br>
+    <Typography>
+      スピード = コミットスピードスコア
+    </Typography>
+    <br></br>
+    <Typography>
+      コミットスピードスコア = リポジトリスピード の合計
+    </Typography>
+    <Typography>
+      リポジトリスピード = リポジトリの最古から最新のコミットまでの1時間あたりの平均コミット数
     </Typography>
   </React.Fragment>
 );
@@ -149,9 +188,9 @@ export default function EngineerUserAbility(props: Props) {
                 <HelpOutlineIcon></HelpOutlineIcon>
               </HtmlTooltip>
             </h3>
-            <p>プロジェクトスコア {abilities[0].projectScore}</p>
             <p>リポジトリスコア {abilities[0].repositoryScore}</p>
             <p>コミットスコア {abilities[0].commitScore}</p>
+            <p>プルリクスコア {abilities[0].pullreqScore}</p>
           </Grid>
           <Grid item xs={3}>
             <h3 className={classes.speedScore}>

@@ -23,8 +23,7 @@ export function calcDetectabilityScore(ability: EngineerUserAbilityReport) {
 }
 
 export function calcSolvingScore(ability: EngineerUserAbilityReport) {
-  return ability.projectScore
-    + ability.repositoryScore
+  return ability.repositoryScore
     + ability.commitScore
     + ability.pullreqScore;
 }
