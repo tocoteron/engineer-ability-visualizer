@@ -12,6 +12,12 @@ import {CartesianGrid, Line, LineChart, XAxis, Tooltip, ResponsiveContainer, YAx
 interface Props {
   engineerUser: EngineerUser;
   abilities: EngineerUserAbilityReport[];
+  rank: {
+    engineer: number,
+    detectability: number,
+    solving: number,
+    speed: number,
+  }
 }
 
 const engineerScoreColor = "#333";
@@ -39,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EngineerUserAbility(props: Props) {
   const classes = useStyles();
-  const { engineerUser, abilities } = props;
+  const { engineerUser, abilities, rank } = props;
 
   return (
     <Container>
@@ -62,20 +68,20 @@ export default function EngineerUserAbility(props: Props) {
         </Grid>
       </div>
       <div className={classes.sectionContainer}>
-        <h2 className={classes.engineerScore}>エンジニアスコア {calcEngineerScore(abilities[0])}</h2>
+        <h2 className={classes.engineerScore}>エンジニアスコア {calcEngineerScore(abilities[0])} ({rank.engineer}位)</h2>
         <Grid container spacing={2}>
           <Grid item xs={3}>
-            <h3 className={classes.detectabilityScore}>発見力 {calcDetectabilityScore(abilities[0])}</h3>
+            <h3 className={classes.detectabilityScore}>発見力 {calcDetectabilityScore(abilities[0]) }({rank.detectability}位)</h3>
             <p>イシュースコア {abilities[0].issueScore}</p>
           </Grid>
           <Grid item xs={3}>
-            <h3 className={classes.solvingScore}>解決力 {calcSolvingScore(abilities[0])}</h3>
+            <h3 className={classes.solvingScore}>解決力 {calcSolvingScore(abilities[0])} ({rank.solving}位)</h3>
             <p>プロジェクトスコア {abilities[0].projectScore}</p>
             <p>リポジトリスコア {abilities[0].repositoryScore}</p>
             <p>コミットスコア {abilities[0].commitScore}</p>
           </Grid>
           <Grid item xs={3}>
-            <h3 className={classes.speedScore}>スピード {calcSpeedScore(abilities[0])}</h3>
+            <h3 className={classes.speedScore}>スピード {calcSpeedScore(abilities[0])} ({rank.speed}位)</h3>
             <p>コミットスピードスコア {abilities[0].speedScore}</p>
           </Grid>
         </Grid>

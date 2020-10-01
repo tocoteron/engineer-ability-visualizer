@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { RouteComponentProps, useParams, withRouter } from "react-router-dom";
 import EngineerUser from '../models/EngineerUser';
 import EngineerUserAbilityReport from '../models/EngineerUserAbilityReport';
 import EngineerUserAbility from '../components/EngineerUserAbility';
 import API from '../api';
 
-export default function EngineerUserAbilityPage() {
-  const { engineerUserId } = useParams<{engineerUserId: string}>();
+interface Props extends RouteComponentProps {}
+
+interface LinkParams {
+  engineerUserId: string
+}
+
+function EngineerUserAbilityPage(props: Props) {
+  const {
+    engineerUserId,
+  } = useParams<LinkParams>();
+  const [
+    engineerRank,
+    detectabilityRank,
+    solvingRank,
+    speedRank,
+  ] = getQueryParams();
   const [engineerUser, setEngineerUser] = useState<EngineerUser>();
   const [abilityReports, setAbilityReports] = useState<EngineerUserAbilityReport[]>([]);
+
+  function getQueryParams() {
+    const a = props.location.search.substring(1).split("&");
+    return a.map((b) => b.split("=")[1])
+  }
 
   useEffect(() => {
     const f = async () => {
@@ -41,8 +60,16 @@ export default function EngineerUserAbilityPage() {
       <EngineerUserAbility
         engineerUser={engineerUser}
         abilities={abilityReports}
+        rank={{
+          engineer: Number(engineerRank),
+          detectability: Number(detectabilityRank),
+          solving: Number(solvingRank),
+          speed: Number(speedRank),
+        }}
       />
     }
     </div>
   );
 }
+
+export default withRouter(EngineerUserAbilityPage);
