@@ -122,9 +122,8 @@ export default function EngineerUserListPage() {
       }
 
       const token = await user.getIdToken()
-      await api.testHRUser(token);
-
       const engineerUsers: EngineerUser[] = await api.getEngineerList(token);
+      console.log("engineerUsers", engineerUsers);
       setEngineerUsers(engineerUsers);
     };
 
