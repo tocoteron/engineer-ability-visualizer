@@ -23,15 +23,6 @@ func NewEngineerUser(db *sqlx.DB, github *github.Client) *EngineerUser {
 	}
 }
 
-func (a *EngineerUser) GetAll(c echo.Context) error {
-	user, err := repository.GetAllEngineerUsers(a.db)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "")
-	}
-
-	return c.JSON(http.StatusOK, user)
-}
-
 func (a *EngineerUser) Get(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)

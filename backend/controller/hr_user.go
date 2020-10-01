@@ -60,3 +60,16 @@ func (a *HRUser) AddEngineerToList(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, engineerUser)
 }
+
+// TODO
+func (a *HRUser) GetEngineerList(c echo.Context) error {
+	cc := c.(*mymiddleware.FirebaseAuthContext)
+	hrUser := cc.HRUser
+
+	res, err := repository.GetAllEngineerUsersWithAbilityReportsByHRUserID(a.db, hrUser.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, res)
+}

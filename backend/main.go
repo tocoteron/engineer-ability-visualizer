@@ -55,12 +55,13 @@ func main() {
 	// Routes
 	e.GET("/", hello, auth.FirebaseAuthMiddleware)
 
-	e.GET("/user/engineer", engineerUserController.GetAll)
+	// e.GET("/user/engineer", engineerUserController.GetAll)
 	e.GET("/user/engineer/:id", engineerUserController.Get)
 
 	e.POST("/user/engineer/:id/ability", engineerUserAbilityReportController.Create)
 	e.GET("/user/engineer/:id/ability", engineerUserAbilityReportController.Get)
 
+	e.GET("/hr_user/engineers", hrUserController.GetEngineerList, auth.FirebaseAuthMiddleware)
 	e.POST("/hr_user/engineers/:githubLoginName", hrUserController.AddEngineerToList, auth.FirebaseAuthMiddleware)
 
 	// Start server

@@ -55,14 +55,46 @@ WHERE login_name = ? LIMIT 1
 	return &engineerUser, nil
 }
 
-func GetAllEngineerUsers(db *sqlx.DB) ([]*model.EngineerUser, error) {
-	mockData := []*model.EngineerUser{
-		{
-			ID:          0,
-			DisplayName: "Tokoroten",
-			LoginName:   "tokoroten-lab",
-			PhotoURL:    "https://avatars3.githubusercontent.com/u/51188956?v=4",
-		},
+func GetAllEngineerUsersWithAbilityReportsByHRUserID(db *sqlx.DB, hrUserID uint64) ([]*model.EngineerUserWithLatestAbilityReport, error) {
+	var engineerUsersWithAbilityReports []*model.EngineerUserWithLatestAbilityReport
+
+	if err := db.Select(&engineerUsersWithAbilityReports, `
+SELECT
+    engineer_users.id,
+    engineer_users.login_name,
+    engineer_users.display_name,
+    engineer_users.photo_url,
+    reports.project_score,
+    reports.repository_score,
+    reports.commit_score,
+    reports.pullreq_score,
+    reports.issue_score,
+    reports.speed_score
+FROM
+    engineer_users_hr_users
+INNER JOIN
+    engineer_users
+ON
+    engineer_users_hr_users.engineer_users_id = engineer_users.id
+LEFT JOIN
+    (
+        SELECT t.*
+        FROM engineer_users_ability_reports as t
+        INNER JOIN (
+            SELECT engineer_users_id, MAX(created_at) as created_at
+            FROM engineer_users_ability_reports
+            GROUP BY engineer_users_id
+        ) as max_t
+        ON t.engineer_users_id = max_t.engineer_users_id
+        AND t.created_at = max_t.created_at
+    ) as reports
+ON
+    engineer_users.id = reports.engineer_users_id
+WHERE
+    hr_users_id = ?;
+	`, hrUserID); err != nil {
+		return nil, nil
 	}
-	return mockData, nil
+
+	return engineerUsersWithAbilityReports, nil
 }
