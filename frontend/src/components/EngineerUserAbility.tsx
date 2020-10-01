@@ -79,10 +79,10 @@ const detectabilityScoreToolTip = (
     </Typography>
     <br></br>
     <Typography>
-      イシュースコア = イシューを作成したリポジトリの価値 + 1 の合計
+      イシュースコア = イシューを作成したリポジトリの価値 の合計
     </Typography>
     <Typography>
-      リポジトリの価値 = スター数 + フォーク数
+      リポジトリの価値 = スター数 + フォーク数 + 1
     </Typography>
   </React.Fragment>
 );
@@ -111,7 +111,7 @@ const solvingScoreToolTip = (
       プルリクスコア = プルリクを出したリポジトリの価値 の合計
     </Typography>
     <Typography>
-      リポジトリの価値 = スター数 + フォーク数
+      リポジトリの価値 = スター数 + フォーク数 + 1
     </Typography>
   </React.Fragment>
 );
