@@ -56,6 +56,22 @@ function EngineerUserCard(props: {engineerUsers: EngineerUser[], engineerUser: E
   const engineerUsers = props.engineerUsers;
   const engineerUser = props.engineerUser;
   const ability = getEngineerAbilityReport(engineerUser);
+  const rank = {
+    engineer: getRankByEngineerScore(engineerUsers, engineerUser),
+    detectability: getRankByDetectablityScore(engineerUsers, engineerUser),
+    solving: getRankBySolvingScore(engineerUsers, engineerUser),
+    speed: getRankBySpeedScore(engineerUsers, engineerUser),
+  };
+
+  function getEngineerUserLink() {
+    const link = `/engineers/${engineerUser.id}?`
+      + `engineerRank=${rank.engineer}`
+      + `&detectabilityRank=${rank.detectability}`
+      + `&solvingRank=${rank.solving}`
+      + `&speedRank=${rank.speed}`;
+
+    return link;
+  }
 
   return (
     <div className="engineer">
@@ -76,7 +92,7 @@ function EngineerUserCard(props: {engineerUsers: EngineerUser[], engineerUser: E
             {engineerUser.displayName}さん
             (
             { hasScore(engineerUser) &&
-              <Link to={`/engineers/${engineerUser.id}`}>
+              <Link to={getEngineerUserLink()}>
                 詳細ページ
               </Link>
             }
@@ -95,19 +111,19 @@ function EngineerUserCard(props: {engineerUsers: EngineerUser[], engineerUser: E
             <div className={classes.scoreContaier}>
               <div className={classes.engineerScore}>
                 <AccountCircleIcon></AccountCircleIcon>
-                <p>{calcEngineerScore(ability)} ({getRankByEngineerScore(engineerUsers, engineerUser)}位)</p>
+                <p>{calcEngineerScore(ability)} ({rank.engineer}位)</p>
               </div>
               <div className={classes.score}>
                 <SearchIcon></SearchIcon>
-                <p>{calcDetectabilityScore(ability)} ({getRankByDetectablityScore(engineerUsers, engineerUser)}位)</p>
+                <p>{calcDetectabilityScore(ability)} ({rank.detectability}位)</p>
               </div>
               <div className={classes.score}>
                 <DoneOutlineIcon></DoneOutlineIcon>
-                <p>{calcSolvingScore(ability)} ({getRankBySolvingScore(engineerUsers, engineerUser)}位)</p>
+                <p>{calcSolvingScore(ability)} ({rank.solving}位)</p>
               </div>
               <div className={classes.score}>
                 <SpeedIcon></SpeedIcon>
-                <p>{calcSpeedScore(ability)} ({getRankBySpeedScore(engineerUsers, engineerUser)}位)</p>
+                <p>{calcSpeedScore(ability)} ({rank.speed}位)</p>
               </div>
             </div>
           }
