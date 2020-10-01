@@ -7,7 +7,7 @@ import EngineerUserAbilityReport, {
   calcSolvingScore,
   calcSpeedScore
 } from '../models/EngineerUserAbilityReport'
-import {CartesianGrid, Line, LineChart, XAxis, Tooltip, ResponsiveContainer} from 'recharts';
+import {CartesianGrid, Line, LineChart, XAxis, Tooltip, ResponsiveContainer, YAxis} from 'recharts';
 
 interface Props {
   engineerUser: EngineerUser;
@@ -81,7 +81,7 @@ export default function EngineerUserAbility(props: Props) {
         </Grid>
       </div>
       <div className="chart">
-        <ResponsiveContainer width="95%" height={400}>
+        <ResponsiveContainer width="95%" height={500}>
           <LineChart
             data={abilities.map((ability) => ({
               engineerScore: calcEngineerScore(ability), 
@@ -90,7 +90,6 @@ export default function EngineerUserAbility(props: Props) {
               speedScore: calcSpeedScore(ability),
               createdAt: ability.createdAt.getTime(),
             }))}
-            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
           >
             <XAxis
               dataKey="createdAt"
@@ -100,16 +99,17 @@ export default function EngineerUserAbility(props: Props) {
                 return new Date(createdAt).toLocaleDateString();
               }}
             />
+            <YAxis />
             <Tooltip
               labelFormatter={(createdAt) => {
                 return new Date(createdAt).toLocaleDateString();
               }}
             />
             <CartesianGrid stroke="#e5e5e5" />
-            <Line type="monotone" name="エンジニアスコア" dataKey="engineerScore" stroke={engineerScoreColor} yAxisId={0} />
-            <Line type="monotone" name="発見力" dataKey="detectabilityScore" stroke={detectabilityScoreColor} yAxisId={1} />
-            <Line type="monotone" name="解決力" dataKey="solvingScore" stroke={solvingScoreColor} yAxisId={2} />
-            <Line type="monotone" name="スピード" dataKey="speedScore" stroke={speedScoreColor} yAxisId={3} />
+            <Line type="monotone" name="エンジニアスコア" dataKey="engineerScore" stroke={engineerScoreColor} />
+            <Line type="monotone" name="発見力" dataKey="detectabilityScore" stroke={detectabilityScoreColor} />
+            <Line type="monotone" name="解決力" dataKey="solvingScore" stroke={solvingScoreColor} />
+            <Line type="monotone" name="スピード" dataKey="speedScore" stroke={speedScoreColor} />
           </LineChart>
         </ResponsiveContainer>
       </div>
