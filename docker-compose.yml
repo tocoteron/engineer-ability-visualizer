@@ -19,6 +19,20 @@ services:
     volumes:
       - ./database/schema:/flyway/sql
   
+  batch:
+    build:
+      context: ./batch
+    depends_on:
+      - db
+    working_dir: /app
+    command: go run main.go
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - DATABASE_DATASOURCE=${DATABASE_DATASOURCE}
+    volumes:
+      - ./batch:/app
+    tty: true # Alive daemon
+  
   backend:
     build:
       context: ./backend
