@@ -22,6 +22,8 @@ services:
   backend:
     build:
       context: ./backend
+    depends_on:
+      - db
     working_dir: /app
     command: reflex -r '\.go$$' -s -- sh -c 'go run main.go'
     environment:
