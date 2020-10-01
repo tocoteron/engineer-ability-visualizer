@@ -56,7 +56,7 @@ WHERE login_name = ? LIMIT 1
 }
 
 func GetAllEngineerUsersWithAbilityReportsByHRUserID(db *sqlx.DB, hrUserID uint64) ([]*model.EngineerUserWithLatestAbilityReport, error) {
-	var engineerUsersWithAbilityReports []*model.EngineerUserWithLatestAbilityReport
+	engineerUsersWithAbilityReports := make([]*model.EngineerUserWithLatestAbilityReport, 0)
 
 	if err := db.Select(&engineerUsersWithAbilityReports, `
 SELECT

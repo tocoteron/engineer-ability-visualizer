@@ -44,14 +44,14 @@ async function addEngineerToList(idToken: string, githubLoginName: string) {
 };
 
 async function getEngineerUserAbilityReports(engineerUserId: number) {
-    const res = await fetch(`${API_BASE_URL}/user/engineer/${engineerUserId}/ability`);
+    const res = await fetch(`${API_BASE_URL}/engineer_user/${engineerUserId}/ability_reports`);
     const json: EngineerUserAbilityReport[] = await res.json();
 
     return json;
 }
 
 async function getEngineerUser(engineerUserId: number) {
-    const res = await fetch(`${API_BASE_URL}/user/engineer/${engineerUserId}`);
+    const res = await fetch(`${API_BASE_URL}/engineer_user/${engineerUserId}`);
     const json: EngineerUser  = await res.json();
 
     return json;

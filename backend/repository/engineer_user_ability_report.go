@@ -1,25 +1,21 @@
 package repository
 
 import (
-	"time"
-
+	"github.com/jmoiron/sqlx"
 	"github.com/tokoroten-lab/engineer-ability-visualizer/model"
 )
 
-func GetEngineerUserAbilityReports(engineerUserID uint64) ([]*model.EngineerUserAbilityReport, error) {
-	mockData := []*model.EngineerUserAbilityReport{
-		{
-			ID:              0,
-			EngineerUserID:  engineerUserID,
-			ProjectScore:    0,
-			RepositoryScore: 30,
-			CommitScore:     70,
-			PullreqScore:    46,
-			IssueScore:      40,
-			SpeedScore:      634,
-			CreatedAt:       time.Now(),
-		},
+func GetEngineerUserAbilityReports(db *sqlx.DB, engineerUserID uint64) ([]*model.EngineerUserAbilityReport, error) {
+	engineerUserAbilityReports := make([]*model.EngineerUserAbilityReport, 0)
+
+	if err := db.Select(&engineerUserAbilityReports, `
+SELECT *
+FROM engineer_users_ability_reports
+WHERE engineer_users_id = ?
+ORDER BY created_at DESC;
+	`, engineerUserID); err != nil {
+		return nil, err
 	}
 
-	return mockData, nil
+	return engineerUserAbilityReports, nil
 }

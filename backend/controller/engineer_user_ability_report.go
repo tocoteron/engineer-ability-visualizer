@@ -44,7 +44,7 @@ func (a *EngineerUserAbilityReport) Get(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
 	}
 
-	mockData, err := repository.GetEngineerUserAbilityReports(id)
+	mockData, err := repository.GetEngineerUserAbilityReports(a.db, id)
 	if err != nil {
 		log.Println(err)
 		return c.String(http.StatusInternalServerError, "Getting engineer ability has failed")

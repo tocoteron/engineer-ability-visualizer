@@ -70,9 +70,5 @@ func (a *HRUser) GetEngineerList(c echo.Context) error {
 		return err
 	}
 
-	if len(res) == 0 {
-		res = make([]*model.EngineerUserWithLatestAbilityReport, 0)
-	}
-
 	return c.JSON(http.StatusOK, res)
 }

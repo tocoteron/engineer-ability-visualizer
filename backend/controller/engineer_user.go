@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -27,13 +26,12 @@ func (a *EngineerUser) Get(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil {
-		log.Println(err)
-		return c.String(http.StatusBadRequest, "Engineer user id is invalid")
+		return err
 	}
 
 	user, err := repository.GetEngineerUser(a.db, id)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "")
+		return err
 	}
 
 	return c.JSON(http.StatusOK, user)

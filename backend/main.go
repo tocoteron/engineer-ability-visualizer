@@ -30,9 +30,9 @@ func main() {
 	}
 
 	databaseDatasource := os.Getenv("DATABASE_DATASOURCE")
-	fmt.Println("DB_SOURCE:", os.Getenv("DATABASE_DATASOURCE"))
+	fmt.Println("DB_SOURCE:", databaseDatasource)
 
-	db, err := sqlx.Open("mysql", databaseDatasource)
+	db, err := sqlx.Open("mysql", databaseDatasource+"?parseTime=true")
 	if err != nil {
 		panic(err)
 	}
@@ -56,10 +56,9 @@ func main() {
 	e.GET("/", hello, auth.FirebaseAuthMiddleware)
 
 	// e.GET("/user/engineer", engineerUserController.GetAll)
-	e.GET("/user/engineer/:id", engineerUserController.Get)
-
-	e.POST("/user/engineer/:id/ability", engineerUserAbilityReportController.Create)
-	e.GET("/user/engineer/:id/ability", engineerUserAbilityReportController.Get)
+	e.GET("/engineer_user/:id", engineerUserController.Get)
+	e.POST("/engineer_user/:id/ability_reports", engineerUserAbilityReportController.Create)
+	e.GET("/engineer_user/:id/ability_reports", engineerUserAbilityReportController.Get)
 
 	e.GET("/hr_user/engineers", hrUserController.GetEngineerList, auth.FirebaseAuthMiddleware)
 	e.POST("/hr_user/engineers/:githubLoginName", hrUserController.AddEngineerToList, auth.FirebaseAuthMiddleware)
