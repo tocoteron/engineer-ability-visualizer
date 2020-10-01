@@ -11,6 +11,7 @@ export default function EngineerUserAbilityPage() {
   const [engineerUser, setEngineerUser] = useState<EngineerUser>();
   const [abilityReports, setAbilityReports] = useState<EngineerUserAbilityReport[]>([]);
 
+  /*
   useEffect(() => {
     console.log("ID", engineerUserId)
 
@@ -41,15 +42,21 @@ export default function EngineerUserAbilityPage() {
     setEngineerUser(mockEngineerUser);
     setAbilityReports(mockAbilityReports);
   }, [engineerUserId])
+  */
 
-  /*
   useEffect(() => {
     const f = async () => {
       try {
         const engineerUser = await API.getEngineerUser(Number(engineerUserId));
         console.log(engineerUser);
 
-        const abilityReports = await API.getEngineerUserAbilityReports(Number(engineerUserId));
+        let abilityReports = await API.getEngineerUserAbilityReports(Number(engineerUserId));
+        abilityReports = abilityReports.map((abilityReport) => ({
+          ...abilityReport,
+          createdAt: typeof(abilityReport.createdAt) === "string"
+            ? new Date(abilityReport.createdAt)
+            : abilityReport.createdAt,
+        }));
         console.log(abilityReports);
 
         setEngineerUser(engineerUser);
@@ -60,12 +67,11 @@ export default function EngineerUserAbilityPage() {
     }
 
     f();
-  }, [])
-  */
+  }, [engineerUserId])
 
   return (
     <div>
-    { abilityReports && engineerUser &&
+    { engineerUser && abilityReports.length > 0 &&
       <EngineerUserAbility
         engineerUser={engineerUser}
         abilities={abilityReports}

@@ -19,7 +19,7 @@ import {
   People as PeopleIcon,
 } from '@material-ui/icons';
 import ListItemLink from './components/ListItemLink';
-import EngineerUserAbilityPage from './pages/EngineerUserAbilityPage';
+import EngineerUserPage from './pages/EngineerUserPage';
 import RegisterHRUserPage from './pages/RegisterHRUserPage';
 import LoginHRUserPage from './pages/LoginHRUserPage';
 import EngineerUserListPage from './pages/EngineerUserListPage';
@@ -101,7 +101,7 @@ function App() {
               <EngineerUserListPage />
             </Route>
             <Route exact path="/engineers/:engineerUserId">
-              <EngineerUserAbilityPage />
+              <EngineerUserPage />
             </Route>
             <Route exact path="/register">
               <RegisterHRUserPage successCallbackPath="/engineers" />
