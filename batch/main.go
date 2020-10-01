@@ -158,19 +158,19 @@ func calcEngineerUserAbility(db *sqlx.DB, engineerUser *model.EngineerUser) (*mo
 	}
 	fmt.Println("RepositoryScore", repositoryScore)
 
-	commitScore, err := calcCommitScore(githubUserEvents)
+	commitScore, err := calcCommitScore(ctx, githubClient, githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println("CommitScore", commitScore)
 
-	pullreqScore, err := calcPullreqScore(githubUserEvents)
+	pullreqScore, err := calcPullreqScore(ctx, githubClient, githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println("PullreqScore", pullreqScore)
 
-	issueScore, err := calcIssueScore(githubUserEvents)
+	issueScore, err := calcIssueScore(ctx, githubClient, githubUserEvents)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +206,7 @@ func getGitHubUser(ctx context.Context, githubClient *github.Client, loginName s
 
 func geGitHubUserEvents(ctx context.Context, client *github.Client, user *github.User) ([]*github.Event, error) {
 	perPage := 100
-	maxPageCount := 2
+	maxPageCount := 5
 
 	res := []*github.Event{}
 
@@ -247,49 +247,58 @@ func calcProjectScore(ctx context.Context, client *github.Client, user *github.U
 }
 
 func calcRepositoryScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
+	score := 0
+
 	repositories, _, err := client.Repositories.List(ctx, user.GetLogin(), nil)
 	if err != nil {
 		return 0, err
 	}
 
-	return uint64(len(repositories)), nil
+	for _, repo := range repositories {
+		score += repo.GetStargazersCount() + repo.GetForksCount() + 1
+	}
+
+	return uint64(score), nil
 }
 
-func calcCommitScore(events []*github.Event) (uint64, error) {
-	commits := []*github.Event{}
+func calcCommitScore(ctx context.Context, github *github.Client, events []*github.Event) (uint64, error) {
+	score := 0
 
 	for _, event := range events {
 		if event.GetType() == "PushEvent" {
-			commits = append(commits, event)
+			repoValue := calcRepositoryValue(ctx, github, event.GetRepo())
+			score += repoValue + 1
 		}
 	}
 
-	return uint64(len(commits)), nil
+	return uint64(score), nil
 }
 
-func calcPullreqScore(events []*github.Event) (uint64, error) {
-	pullreqs := []*github.Event{}
+func calcPullreqScore(ctx context.Context, github *github.Client, events []*github.Event) (uint64, error) {
+	score := 0
 
 	for _, event := range events {
 		if event.GetType() == "PullRequestEvent" {
-			pullreqs = append(pullreqs, event)
+			repoValue := calcRepositoryValue(ctx, github, event.GetRepo())
+			score += repoValue + 1
 		}
 	}
 
-	return uint64(len(pullreqs)), nil
+	return uint64(score), nil
 }
 
-func calcIssueScore(events []*github.Event) (uint64, error) {
-	issues := []*github.Event{}
+func calcIssueScore(ctx context.Context, github *github.Client, events []*github.Event) (uint64, error) {
+	score := 0
 
 	for _, event := range events {
 		eventType := event.GetType()
 		if eventType == "IssuesEvent" || eventType == "IssueCommentEvent" {
-			issues = append(issues, event)
+			repoValue := calcRepositoryValue(ctx, github, event.GetRepo())
+			score += repoValue + 1
 		}
 	}
 
-	return uint64(len(issues)), nil
+	return uint64(score), nil
 }
 
 func calcSpeedScore(ctx context.Context, client *github.Client, user *github.User) (uint64, error) {
@@ -324,7 +333,7 @@ func calcSpeedScore(ctx context.Context, client *github.Client, user *github.Use
 				commits[len(commits)-1].GetCommit(),
 				commits[0].GetCommit(),
 			)
-			speedScore += float64(len(commits)) / duration.Hours()
+			speedScore += float64(len(commits)) / (duration.Hours() / 24)
 		}
 	}
 
@@ -333,4 +342,13 @@ func calcSpeedScore(ctx context.Context, client *github.Client, user *github.Use
 
 func calcDurationBetween2Commits(first *github.Commit, last *github.Commit) time.Duration {
 	return last.GetCommitter().GetDate().Sub(first.GetCommitter().GetDate())
+}
+
+func calcRepositoryValue(ctx context.Context, github *github.Client, repo *github.Repository) int {
+	repo, _, err := github.Repositories.GetByID(ctx, repo.GetID())
+	if err != nil {
+		return 0
+	}
+
+	return repo.GetStargazersCount() + repo.GetForksCount()
 }
