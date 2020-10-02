@@ -27,6 +27,8 @@
 - スピード (課題に取り組む速さ)
   - コミットスピードスコア
 
+![](./images/ability.png)
+
 ### 参考資料
 
 https://drive.google.com/file/d/15qCIAcWko9MW1Wl4BE4UNkf-0Wpj84wz/view?usp=sharing
