@@ -44,9 +44,7 @@ https://drive.google.com/file/d/15qCIAcWko9MW1Wl4BE4UNkf-0Wpj84wz/view?usp=shari
 
 ## 事前準備
 
-### Firebase
-
-Firebase: https://console.firebase.google.com/
+### Firebase (https://console.firebase.google.com/)
 
 1. Firebaseのプロジェクトを作成する
 2. Firebaseのアプリを作成する
@@ -77,8 +75,8 @@ Firebase: https://console.firebase.google.com/
 
 1. `make env`
 2. `make container=db up`でデータベースを起動
-3. `make db/init`でDBを作成する(初回時のみ)
-4. `make flyway/migrate`でDBのマイグレーションを行う(初回時のみ)
+3. `make db/init`でDBを作成する
+4. `make flyway/migrate`でDBのマイグレーションを行う
 5. `make down`でコンテナを一度終了させる
 6. `make GITHUB_TOKEN=$GITHUB_TOKEN BATCH_TICK_DURATION=$BATCH_TICK_DURATION up`でプロダクトを起動
 7. ブラウザで`http://localhost:3000`にアクセスする
